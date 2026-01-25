@@ -6,7 +6,6 @@ import {
   Activity,
   Calendar,
   Dumbbell,
-  History,
   Plus,
   TrendingUp,
   Target,
@@ -19,10 +18,20 @@ import {
   Play,
   Clock,
   Flame,
+  Heart,
+  Brain,
+  Zap,
+  Moon,
+  Shield,
+  Smile,
+  Info,
+  BarChart3,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
-import { bodyPartsData } from "@/lib/data";
+import { bodyPartsData, getWeakBodyParts } from "@/lib/data";
 import BodyMapModal from "@/components/BodyMapModal";
+import BodyPartGrid from "@/components/BodyPartGrid";
+import AIAssistantCard from "@/components/AIAssistantCard";
 import { BodyPart } from "@/types";
 
 export default function DashboardPage() {
@@ -56,13 +65,57 @@ export default function DashboardPage() {
     { label: "Komunita", href: "/dashboard/sin-slavy", icon: Users, color: "#8b5cf6" },
   ];
 
-  const weakParts = bodyPartsData.filter(p => p.progress < 45);
+  const exerciseBenefits = [
+    {
+      icon: Heart,
+      title: "Zdravé srdce",
+      description: "Pravidelný trénink snižuje riziko srdečních chorob až o 35%",
+      color: "#ef4444",
+    },
+    {
+      icon: Brain,
+      title: "Lepší mysl",
+      description: "Cvičení zvyšuje produkci endorfinů a zlepšuje paměť",
+      color: "#8b5cf6",
+    },
+    {
+      icon: Zap,
+      title: "Více energie",
+      description: "Aktivní lidé mají o 20% více energie během dne",
+      color: "#f59e0b",
+    },
+    {
+      icon: Moon,
+      title: "Kvalitní spánek",
+      description: "Trénink zlepšuje kvalitu spánku a regeneraci těla",
+      color: "#3b82f6",
+    },
+    {
+      icon: Shield,
+      title: "Silná imunita",
+      description: "Pravidelný pohyb posiluje imunitní systém",
+      color: "#10b981",
+    },
+    {
+      icon: Smile,
+      title: "Lepší nálada",
+      description: "Cvičení snižuje stres a příznaky deprese",
+      color: "#ec4899",
+    },
+  ];
+
+  const weakParts = getWeakBodyParts();
+
+  // Calculate overall progress
+  const overallProgress = Math.round(
+    bodyPartsData.reduce((acc, part) => acc + part.progress, 0) / bodyPartsData.length
+  );
 
   return (
     <div className="min-h-screen bg-[#030303] text-white">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-[#030303]/80 backdrop-blur-xl border-b border-white/5">
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 2rem' }}>
+        <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 2rem' }}>
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-8">
               <Link href="/dashboard" className="flex items-center gap-3">
@@ -110,112 +163,266 @@ export default function DashboardPage() {
       </header>
 
       <main className="pb-24 lg:pb-12">
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem' }}>
-          {/* Welcome */}
-          <div className="mb-12">
-            <h1 className="text-3xl font-bold mb-2">
-              Ahoj, {user?.name?.split(' ')[0] || 'sportovče'}
+        <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '2rem' }}>
+
+          {/* Welcome Section */}
+          <div className="mb-16">
+            <h1 className="text-4xl font-bold mb-3">
+              Ahoj, {user?.name?.split(' ')[0] || 'sportovče'} 👋
             </h1>
-            <p className="text-gray-500">Připraven na další trénink?</p>
+            <p className="text-gray-400 text-lg">Připraven na další trénink? Tvoje tělo ti poděkuje.</p>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-8">
-            {/* Main Content */}
-            <div className="lg:col-span-2 space-y-10">
-              {/* Stats Row */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                {[
-                  { label: "Tento týden", value: "3", unit: "tréninky", icon: Activity, color: "#3b82f6" },
-                  { label: "Progres", value: "+2.5", unit: "%", icon: TrendingUp, color: "#10b981" },
-                  { label: "Kalorie", value: "12.4k", unit: "kcal", icon: Flame, color: "#ff6b35" },
-                  { label: "Streak", value: "7", unit: "dní", icon: Target, color: "#8b5cf6" },
-                ].map((stat, i) => (
-                  <div key={i}>
-                    <div className="flex items-center gap-2 mb-3">
-                      <stat.icon className="w-4 h-4" style={{ color: stat.color }} />
-                      <span className="text-xs text-gray-500 uppercase tracking-wider">{stat.label}</span>
+          {/* Stats Row - Full Width */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
+            {[
+              { label: "Tento týden", value: "3", unit: "tréninky", icon: Activity, color: "#3b82f6" },
+              { label: "Progres", value: "+2.5", unit: "%", icon: TrendingUp, color: "#10b981" },
+              { label: "Kalorie", value: "12.4k", unit: "kcal", icon: Flame, color: "#ff6b35" },
+              { label: "Streak", value: "7", unit: "dní", icon: Target, color: "#8b5cf6" },
+            ].map((stat, i) => (
+              <div
+                key={i}
+                className="p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-white/10 transition-colors"
+              >
+                <div className="flex items-center gap-2 mb-4">
+                  <div
+                    className="w-10 h-10 rounded-xl flex items-center justify-center"
+                    style={{ backgroundColor: `${stat.color}15` }}
+                  >
+                    <stat.icon className="w-5 h-5" style={{ color: stat.color }} />
+                  </div>
+                </div>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-4xl font-bold">{stat.value}</span>
+                  <span className="text-gray-500">{stat.unit}</span>
+                </div>
+                <p className="text-sm text-gray-500 mt-1">{stat.label}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Main Grid */}
+          <div className="grid lg:grid-cols-3 gap-10">
+
+            {/* Left Column - Main Content */}
+            <div className="lg:col-span-2 space-y-16">
+
+              {/* Body Part Grid */}
+              <section>
+                <BodyPartGrid />
+              </section>
+
+              {/* Přehled všech partií */}
+              <section>
+                <div className="flex items-center justify-between mb-8">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#ff6b35]/20 to-[#e53935]/20 flex items-center justify-center">
+                      <BarChart3 className="w-6 h-6 text-[#ff6b35]" />
                     </div>
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-3xl font-bold">{stat.value}</span>
-                      <span className="text-gray-500 text-sm">{stat.unit}</span>
+                    <div>
+                      <h2 className="text-xl font-bold">Přehled všech partií</h2>
+                      <p className="text-sm text-gray-500">Celkový progres: {overallProgress}%</p>
                     </div>
                   </div>
-                ))}
-              </div>
+                </div>
+
+                <div className="grid gap-4">
+                  {bodyPartsData.map((part) => {
+                    const isWeak = part.progress < 45;
+                    const isStrong = part.progress >= 60;
+
+                    return (
+                      <button
+                        key={part.id}
+                        onClick={() => handlePartClick(part)}
+                        className="p-5 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-[#ff6b35]/30 transition-all text-left group"
+                      >
+                        <div className="flex items-center gap-6">
+                          {/* Icon */}
+                          <div
+                            className="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0"
+                            style={{ backgroundColor: `${part.color}20` }}
+                          >
+                            <Dumbbell className="w-6 h-6" style={{ color: part.color }} />
+                          </div>
+
+                          {/* Info */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-3 mb-2">
+                              <h3 className="font-semibold text-lg group-hover:text-[#ff6b35] transition-colors">
+                                {part.name}
+                              </h3>
+                              {isWeak && (
+                                <span className="px-2 py-0.5 rounded-full bg-gradient-to-r from-[#ff6b35] to-[#e53935] text-[10px] font-bold text-white">
+                                  Priorita
+                                </span>
+                              )}
+                              {isStrong && (
+                                <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-[10px] font-bold text-emerald-400">
+                                  Silná
+                                </span>
+                              )}
+                            </div>
+
+                            {/* Progress bar */}
+                            <div className="flex items-center gap-4">
+                              <div className="flex-1 h-2 bg-white/5 rounded-full overflow-hidden">
+                                <div
+                                  className={`h-full rounded-full transition-all duration-500 ${
+                                    isWeak
+                                      ? "bg-gradient-to-r from-[#ff6b35] to-[#e53935]"
+                                      : "bg-gradient-to-r from-emerald-500 to-green-500"
+                                  }`}
+                                  style={{ width: `${part.progress}%` }}
+                                />
+                              </div>
+                              <span className={`text-sm font-bold min-w-[3rem] text-right ${
+                                isWeak ? "text-[#ff6b35]" : "text-emerald-400"
+                              }`}>
+                                {part.progress}%
+                              </span>
+                            </div>
+
+                            {/* Exercises count */}
+                            <p className="text-xs text-gray-500 mt-2">
+                              {part.exercises.length} cviků • {part.exercises.slice(0, 2).map(e => e.name).join(", ")}
+                              {part.exercises.length > 2 && "..."}
+                            </p>
+                          </div>
+
+                          {/* Arrow */}
+                          <ChevronRight className="w-5 h-5 text-gray-600 group-hover:text-[#ff6b35] transition-colors flex-shrink-0" />
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </section>
 
               {/* Next Workout */}
-              <div className="p-8 rounded-3xl bg-gradient-to-br from-[#ff6b35] to-[#e53935] relative overflow-hidden">
-                <div className="relative z-10">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Clock className="w-4 h-4 text-white/60" />
-                    <span className="text-white/60 text-sm">Další trénink</span>
+              <section>
+                <div className="p-10 rounded-3xl bg-gradient-to-br from-[#ff6b35] to-[#e53935] relative overflow-hidden">
+                  <div className="relative z-10">
+                    <div className="flex items-center gap-2 mb-6">
+                      <Clock className="w-5 h-5 text-white/60" />
+                      <span className="text-white/60">Další trénink</span>
+                    </div>
+                    <h2 className="text-3xl font-bold text-white mb-3">
+                      Push Day
+                    </h2>
+                    <p className="text-white/70 text-lg mb-8">Hrudník, Ramena, Triceps • 6 cviků • ~60 min</p>
+                    <Link href="/workout/new">
+                      <button className="px-8 py-4 rounded-2xl bg-white text-[#ff6b35] font-bold text-lg flex items-center gap-3 hover:bg-white/90 transition-colors shadow-xl">
+                        <Play className="w-6 h-6" />
+                        Zahájit trénink
+                      </button>
+                    </Link>
                   </div>
-                  <h2 className="text-2xl font-bold text-white mb-2">
-                    Push Day
-                  </h2>
-                  <p className="text-white/70 mb-6">Hrudník, Ramena, Triceps • 6 cviků</p>
-                  <Link href="/workout/new">
-                    <button className="px-6 py-3 rounded-xl bg-white text-[#ff6b35] font-semibold flex items-center gap-2 hover:bg-white/90 transition-colors">
-                      <Play className="w-5 h-5" />
-                      Zahájit trénink
-                    </button>
-                  </Link>
+                  <Dumbbell className="absolute -right-12 -bottom-12 w-56 h-56 text-white/10 rotate-12" />
                 </div>
-                <Dumbbell className="absolute -right-8 -bottom-8 w-40 h-40 text-white/10 rotate-12" />
-              </div>
+              </section>
 
-              {/* Weak Points */}
-              {weakParts.length > 0 && (
-                <div>
-                  <div className="flex items-center gap-2 mb-6">
-                    <Target className="w-5 h-5 text-[#ff6b35]" />
-                    <h2 className="text-lg font-semibold">Zaměřit se na</h2>
+              {/* Benefity cvičení */}
+              <section>
+                <div className="flex items-center gap-3 mb-8">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-green-500/20 flex items-center justify-center">
+                    <Heart className="w-6 h-6 text-emerald-500" />
                   </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                  <div>
+                    <h2 className="text-xl font-bold">Proč cvičit?</h2>
+                    <p className="text-sm text-gray-500">Benefity pravidelného tréninku</p>
+                  </div>
+                </div>
+
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {exerciseBenefits.map((benefit, i) => (
+                    <div
+                      key={i}
+                      className="p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-white/10 transition-all group"
+                    >
+                      <div
+                        className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4"
+                        style={{ backgroundColor: `${benefit.color}15` }}
+                      >
+                        <benefit.icon className="w-6 h-6" style={{ color: benefit.color }} />
+                      </div>
+                      <h3 className="font-semibold text-lg mb-2 group-hover:text-[#ff6b35] transition-colors">
+                        {benefit.title}
+                      </h3>
+                      <p className="text-sm text-gray-400 leading-relaxed">
+                        {benefit.description}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+              {/* Zaměřit se na - slabé partie */}
+              {weakParts.length > 0 && (
+                <section>
+                  <div className="flex items-center gap-3 mb-8">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#ff6b35]/20 to-[#e53935]/20 flex items-center justify-center">
+                      <Target className="w-6 h-6 text-[#ff6b35]" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-bold">Zaměřit se na</h2>
+                      <p className="text-sm text-gray-500">{weakParts.length} partie potřebují pozornost</p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
                     {weakParts.slice(0, 6).map((part) => (
                       <button
                         key={part.id}
                         onClick={() => handlePartClick(part)}
-                        className="text-left p-5 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-[#ff6b35]/30 transition-colors group"
+                        className="text-left p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-[#ff6b35]/30 transition-all group"
                       >
-                        <div className="flex items-center justify-between mb-3">
-                          <span className="font-medium group-hover:text-[#ff6b35] transition-colors">
+                        <div className="flex items-center justify-between mb-4">
+                          <span className="font-semibold group-hover:text-[#ff6b35] transition-colors">
                             {part.name}
                           </span>
-                          <span className="text-[#ff6b35] text-sm font-semibold">{part.progress}%</span>
+                          <span className="text-[#ff6b35] font-bold">{part.progress}%</span>
                         </div>
-                        <div className="h-1 bg-white/5 rounded-full overflow-hidden">
+                        <div className="h-2 bg-white/5 rounded-full overflow-hidden">
                           <div
                             className="h-full rounded-full bg-gradient-to-r from-[#ff6b35] to-[#e53935]"
                             style={{ width: `${part.progress}%` }}
                           />
                         </div>
+                        <p className="text-xs text-gray-500 mt-3">
+                          {part.exercises.length} doporučených cviků
+                        </p>
                       </button>
                     ))}
                   </div>
-                </div>
+                </section>
               )}
             </div>
 
-            {/* Sidebar */}
-            <div className="space-y-8">
+            {/* Right Column - Sidebar */}
+            <div className="space-y-10">
+
+              {/* AI Assistant */}
+              <AIAssistantCard weakBodyParts={weakParts} />
+
               {/* Quick Links */}
-              <div>
-                <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
+              <section>
+                <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-6">
                   Rychlé akce
                 </h2>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-4">
                   {quickLinks.map((link) => (
                     <Link
                       key={link.href}
                       href={link.href}
-                      className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-white/10 transition-colors group"
+                      className="p-5 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-white/10 transition-all group"
                     >
                       <div
-                        className="w-10 h-10 rounded-xl flex items-center justify-center mb-3"
+                        className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
                         style={{ backgroundColor: `${link.color}15` }}
                       >
-                        <link.icon className="w-5 h-5" style={{ color: link.color }} />
+                        <link.icon className="w-6 h-6" style={{ color: link.color }} />
                       </div>
                       <span className="text-sm font-medium group-hover:text-white transition-colors text-gray-400">
                         {link.label}
@@ -223,39 +430,52 @@ export default function DashboardPage() {
                     </Link>
                   ))}
                 </div>
-              </div>
+              </section>
 
               {/* Recent Activity */}
-              <div>
-                <div className="flex items-center justify-between mb-4">
+              <section>
+                <div className="flex items-center justify-between mb-6">
                   <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
                     Poslední aktivita
                   </h2>
                   <button className="text-xs text-[#ff6b35] font-medium hover:underline">Vše</button>
                 </div>
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {recentWorkouts.map((workout, i) => (
                     <div
                       key={i}
-                      className="flex items-center justify-between p-4 rounded-xl bg-white/[0.02] hover:bg-white/[0.04] transition-colors cursor-pointer"
+                      className="flex items-center justify-between p-5 rounded-2xl bg-white/[0.02] hover:bg-white/[0.04] transition-colors cursor-pointer border border-white/5"
                     >
                       <div className="flex items-center gap-4">
                         <div
-                          className="w-10 h-10 rounded-xl flex items-center justify-center"
+                          className="w-12 h-12 rounded-xl flex items-center justify-center"
                           style={{ backgroundColor: `${workout.color}15` }}
                         >
                           <Dumbbell className="w-5 h-5" style={{ color: workout.color }} />
                         </div>
                         <div>
-                          <h4 className="font-medium text-sm">{workout.title}</h4>
-                          <p className="text-xs text-gray-600">{workout.date}</p>
+                          <h4 className="font-medium">{workout.title}</h4>
+                          <p className="text-xs text-gray-500">{workout.date}</p>
                         </div>
                       </div>
-                      <span className="text-sm text-gray-500">{workout.duration}</span>
+                      <span className="text-sm text-gray-400 font-medium">{workout.duration}</span>
                     </div>
                   ))}
                 </div>
-              </div>
+              </section>
+
+              {/* Tip dne */}
+              <section className="p-6 rounded-2xl bg-gradient-to-br from-[#8b5cf6]/10 to-[#6366f1]/10 border border-[#8b5cf6]/20">
+                <div className="flex items-center gap-3 mb-4">
+                  <Lightbulb className="w-5 h-5 text-[#8b5cf6]" />
+                  <span className="text-sm font-semibold text-[#8b5cf6]">Tip dne</span>
+                </div>
+                <p className="text-sm text-gray-300 leading-relaxed">
+                  Nezapomínej na zahřátí před tréninkem! 5-10 minut lehkého kardio a dynamického strečinku
+                  sníží riziko zranění a zlepší tvůj výkon.
+                </p>
+              </section>
+
             </div>
           </div>
         </div>

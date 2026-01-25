@@ -102,3 +102,11 @@ export interface NavItem {
   href: string;
   icon?: React.ComponentType<{ className?: string }>;
 }
+
+// AI Chat
+export interface ChatMessage {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  timestamp: Date;
+}
