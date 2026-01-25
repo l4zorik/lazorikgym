@@ -368,45 +368,83 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Divider */}
+      <div className="relative py-16">
+        <div className="absolute inset-0 flex items-center" style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 1.5rem' }}>
+          <div className="w-full border-t border-white/5" />
+        </div>
+        <div className="relative flex justify-center">
+          <div className="px-6 py-3 bg-[#030303]">
+            <div className="w-2 h-2 rounded-full bg-gradient-to-r from-[#ff6b35] to-[#ff3366]" />
+          </div>
+        </div>
+      </div>
+
       {/* Body Map Section */}
-      <section id="body-map" className="py-40 relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] via-[#0a0a0a] to-[#030303]" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-[#ff6b35]/10 to-[#ff3366]/10 rounded-full blur-[200px]" />
+      <section id="body-map" className="py-32 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#030303] via-[#0a0a0a] to-[#030303]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] bg-gradient-to-r from-[#ff6b35]/15 to-[#ff3366]/10 rounded-full blur-[200px]" />
 
         <div className="relative" style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 1.5rem' }}>
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+          <div className="grid lg:grid-cols-2 gap-20 items-center">
+            {/* Left side - Text */}
             <div>
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-6">
+              <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-[#ff6b35]/10 to-[#ff3366]/10 border border-[#ff6b35]/20 mb-8">
                 <Target className="w-4 h-4 text-[#ff6b35]" />
-                <span className="text-sm text-gray-400">Interaktivní analýza</span>
+                <span className="text-sm font-medium text-gray-300">Interaktivní analýza</span>
               </div>
-              <h2 className="text-4xl md:text-5xl font-bold mb-6">
+
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-8 leading-tight">
                 Zaměř se na
-                <span className="bg-gradient-to-r from-[#ff6b35] to-[#ff3366] bg-clip-text text-transparent"> slabé partie</span>
+                <br />
+                <span className="bg-gradient-to-r from-[#ff6b35] to-[#ff3366] bg-clip-text text-transparent">slabé partie</span>
               </h2>
-              <p className="text-xl text-gray-400 mb-8 leading-relaxed">
+
+              <p className="text-xl text-gray-400 mb-12 leading-relaxed max-w-lg">
                 Klikni na svalovou skupinu a získej personalizovaný plán cviků.
                 AI ti doporučí nejefektivnější cviky pro rychlý pokrok.
               </p>
 
-              <div className="space-y-4">
+              {/* Feature list - Upgraded */}
+              <div className="space-y-5">
                 {[
-                  "Personalizované cviky pro každou partii",
-                  "Video návody s technikou",
-                  "Sledování pokroku v čase",
+                  { text: "Personalizované cviky pro každou partii", icon: "🎯" },
+                  { text: "Video návody s technikou", icon: "🎬" },
+                  { text: "Sledování pokroku v čase", icon: "📈" },
                 ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-3">
-                    <div className="w-6 h-6 rounded-full bg-[#ff6b35]/20 flex items-center justify-center">
-                      <Check className="w-4 h-4 text-[#ff6b35]" />
+                  <div key={i} className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-white/10 transition-colors">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#ff6b35]/20 to-[#ff3366]/10 flex items-center justify-center text-lg">
+                      {item.icon}
                     </div>
-                    <span className="text-gray-300">{item}</span>
+                    <span className="text-gray-200 font-medium">{item.text}</span>
                   </div>
                 ))}
               </div>
             </div>
 
+            {/* Right side - Body Map */}
             <div className="relative">
-              <div className="p-8 rounded-3xl bg-gradient-to-br from-white/5 to-transparent border border-white/10">
+              {/* Glow behind */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-gradient-to-r from-[#ff6b35]/20 to-[#ff3366]/20 rounded-full blur-[100px]" />
+
+              {/* Card */}
+              <div className="relative p-10 rounded-[2rem] bg-[#0d1117]/80 backdrop-blur-xl border border-white/10 shadow-2xl">
+                {/* Header */}
+                <div className="flex items-center justify-between mb-8">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#ff6b35] to-[#ff3366] flex items-center justify-center">
+                      <Activity className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-lg">Přehled partií</h3>
+                      <p className="text-xs text-gray-500">Klikni pro detaily</p>
+                    </div>
+                  </div>
+                  <div className="px-3 py-1.5 rounded-full bg-[#10b981]/10 border border-[#10b981]/20">
+                    <span className="text-xs font-semibold text-[#10b981]">AKTIVNÍ</span>
+                  </div>
+                </div>
+
                 <BodyMap onPartClick={handlePartClick} />
               </div>
             </div>
