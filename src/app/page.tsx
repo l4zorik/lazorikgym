@@ -96,9 +96,10 @@ export default function LandingPage() {
             {/* Left side - Text */}
             <div>
               {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-[#ff6b35]/10 to-[#ff3366]/10 border border-[#ff6b35]/20 mb-8">
+              <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-[#ff6b35]/20 to-[#ff3366]/10 border border-[#ff6b35]/30 mb-8 backdrop-blur-sm">
+                <div className="w-2 h-2 rounded-full bg-[#ff6b35] animate-pulse" />
+                <span className="text-sm font-medium text-white/90">AI-powered fitness platforma</span>
                 <Sparkles className="w-4 h-4 text-[#ff6b35]" />
-                <span className="text-sm text-gray-300">AI-powered fitness platforma</span>
               </div>
 
               {/* Headline */}
@@ -111,102 +112,161 @@ export default function LandingPage() {
               </h1>
 
               {/* Description */}
-              <p className="text-xl text-gray-400 mb-10 leading-relaxed max-w-lg">
+              <p className="text-xl text-gray-400 mb-12 leading-relaxed max-w-lg">
                 AI analyzuje tvé slabé partie a vytváří personalizované plány.
                 Sleduj pokrok, získej tipy od trenérů a staň se součástí komunity.
               </p>
 
-              {/* CTA */}
-              <div className="flex flex-col sm:flex-row gap-4 mb-12">
+              {/* CTA Buttons - Upgraded */}
+              <div className="flex flex-col sm:flex-row gap-5 mb-16">
                 <Link
                   href="/register"
-                  className="group inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl bg-gradient-to-r from-[#ff6b35] to-[#ff3366] text-white font-semibold text-lg hover:shadow-2xl hover:shadow-[#ff6b35]/25 transition-all"
+                  className="group relative inline-flex items-center justify-center gap-3 px-10 py-5 rounded-2xl bg-gradient-to-r from-[#ff6b35] to-[#ff3366] text-white font-bold text-lg overflow-hidden transition-all hover:scale-[1.02] hover:shadow-[0_20px_60px_-15px_rgba(255,107,53,0.5)]"
                 >
-                  Začít zdarma
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                  <span className="relative">Začít zdarma</span>
+                  <ArrowRight className="w-5 h-5 relative group-hover:translate-x-1 transition-transform" />
                 </Link>
                 <a
                   href="#features"
-                  className="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl border border-white/10 text-white font-semibold text-lg hover:bg-white/5 transition-colors"
+                  className="group inline-flex items-center justify-center gap-3 px-10 py-5 rounded-2xl bg-white/5 border-2 border-white/10 text-white font-bold text-lg hover:bg-white/10 hover:border-white/20 transition-all"
                 >
-                  <Play className="w-5 h-5" />
+                  <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors">
+                    <Play className="w-5 h-5 fill-white" />
+                  </div>
                   Zjistit více
                 </a>
               </div>
 
-              {/* Stats row */}
-              <div className="flex items-center gap-8">
-                <div>
-                  <div className="text-3xl font-bold">10k+</div>
-                  <div className="text-sm text-gray-500">Aktivních členů</div>
-                </div>
-                <div className="w-px h-12 bg-white/10" />
-                <div>
-                  <div className="text-3xl font-bold">4.9</div>
-                  <div className="text-sm text-gray-500 flex items-center gap-1">
-                    <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
-                    Hodnocení
+              {/* Stats row - Upgraded */}
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 px-6 py-4 rounded-2xl bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/10">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#3b82f6] to-[#8b5cf6] flex items-center justify-center">
+                    <Users className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold">10k+</div>
+                    <div className="text-xs text-gray-500 uppercase tracking-wider">Členů</div>
                   </div>
                 </div>
-                <div className="w-px h-12 bg-white/10" />
-                <div>
-                  <div className="text-3xl font-bold">500+</div>
-                  <div className="text-sm text-gray-500">Cviků</div>
+
+                <div className="flex items-center gap-4 px-6 py-4 rounded-2xl bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/10">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#f59e0b] to-[#f97316] flex items-center justify-center">
+                    <Star className="w-6 h-6 text-white fill-white" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold">4.9</div>
+                    <div className="text-xs text-gray-500 uppercase tracking-wider">Hodnocení</div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4 px-6 py-4 rounded-2xl bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/10">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#10b981] to-[#059669] flex items-center justify-center">
+                    <Dumbbell className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold">500+</div>
+                    <div className="text-xs text-gray-500 uppercase tracking-wider">Cviků</div>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Right side - Visual */}
+            {/* Right side - Visual - Upgraded */}
             <div className="relative hidden lg:block">
+              {/* Glow behind card */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-r from-[#ff6b35]/20 to-[#ff3366]/20 rounded-full blur-[100px]" />
+
               <div className="relative">
-                {/* Main card */}
-                <div className="relative z-10 p-8 rounded-3xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/10">
-                  <div className="flex items-center gap-4 mb-6">
-                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#ff6b35] to-[#ff3366] flex items-center justify-center">
-                      <Brain className="w-7 h-7 text-white" />
+                {/* Floating card - Top Right */}
+                <div className="absolute -top-6 -right-4 z-20 px-5 py-3.5 rounded-2xl bg-[#0d1117]/90 backdrop-blur-xl border border-[#10b981]/30 shadow-2xl shadow-[#10b981]/10 animate-float">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#10b981] to-[#059669] flex items-center justify-center">
+                      <TrendingUp className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-lg">AI Analýza</h3>
-                      <p className="text-sm text-gray-400">Probíhá skenování...</p>
+                      <div className="text-lg font-bold text-[#10b981]">+12%</div>
+                      <div className="text-xs text-gray-500">tento měsíc</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Main AI Card - Upgraded */}
+                <div className="relative z-10 p-8 rounded-3xl bg-[#0d1117]/80 backdrop-blur-2xl border border-white/10 shadow-2xl">
+                  {/* Header */}
+                  <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center gap-4">
+                      <div className="relative">
+                        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#ff6b35] to-[#ff3366] flex items-center justify-center">
+                          <Brain className="w-8 h-8 text-white" />
+                        </div>
+                        <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[#10b981] border-2 border-[#0d1117] flex items-center justify-center">
+                          <Check className="w-3 h-3 text-white" />
+                        </div>
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-xl">AI Analýza</h3>
+                        <div className="flex items-center gap-2 mt-1">
+                          <div className="w-2 h-2 rounded-full bg-[#10b981] animate-pulse" />
+                          <p className="text-sm text-gray-400">Skenování dokončeno</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="px-3 py-1.5 rounded-full bg-[#ff6b35]/10 border border-[#ff6b35]/20">
+                      <span className="text-xs font-semibold text-[#ff6b35]">LIVE</span>
                     </div>
                   </div>
 
-                  {/* Progress bars */}
-                  <div className="space-y-4">
+                  {/* Progress bars - Upgraded */}
+                  <div className="space-y-5">
                     {[
-                      { name: "Hrudník", value: 75, color: "#10b981" },
-                      { name: "Záda", value: 60, color: "#3b82f6" },
-                      { name: "Ramena", value: 45, color: "#ff6b35" },
-                      { name: "Core", value: 30, color: "#ff3366" },
+                      { name: "Hrudník", value: 75, color: "#10b981", icon: "💪" },
+                      { name: "Záda", value: 60, color: "#3b82f6", icon: "🔥" },
+                      { name: "Ramena", value: 45, color: "#ff6b35", icon: "⚡" },
+                      { name: "Core", value: 30, color: "#ff3366", icon: "🎯" },
                     ].map((item) => (
-                      <div key={item.name}>
-                        <div className="flex justify-between text-sm mb-2">
-                          <span className="text-gray-400">{item.name}</span>
-                          <span className="font-medium">{item.value}%</span>
+                      <div key={item.name} className="group">
+                        <div className="flex items-center justify-between mb-2.5">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm">{item.icon}</span>
+                            <span className="text-sm font-medium text-gray-300">{item.name}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-bold" style={{ color: item.color }}>{item.value}%</span>
+                          </div>
                         </div>
-                        <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                        <div className="h-3 bg-white/5 rounded-full overflow-hidden">
                           <div
-                            className="h-full rounded-full transition-all duration-1000"
-                            style={{ width: `${item.value}%`, backgroundColor: item.color }}
-                          />
+                            className="h-full rounded-full transition-all duration-1000 relative overflow-hidden"
+                            style={{ width: `${item.value}%`, background: `linear-gradient(90deg, ${item.color}, ${item.color}dd)` }}
+                          >
+                            <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/30 to-white/0 animate-shimmer" />
+                          </div>
                         </div>
                       </div>
                     ))}
                   </div>
-                </div>
 
-                {/* Floating cards */}
-                <div className="absolute -top-8 -right-8 p-4 rounded-2xl bg-gradient-to-br from-[#10b981]/20 to-[#10b981]/5 backdrop-blur-xl border border-[#10b981]/20 animate-float">
-                  <div className="flex items-center gap-3">
-                    <TrendingUp className="w-5 h-5 text-[#10b981]" />
-                    <span className="font-medium">+12% tento měsíc</span>
+                  {/* Bottom stats */}
+                  <div className="mt-8 pt-6 border-t border-white/5 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Activity className="w-4 h-4 text-gray-500" />
+                      <span className="text-sm text-gray-500">Celkový progres</span>
+                    </div>
+                    <div className="text-lg font-bold bg-gradient-to-r from-[#ff6b35] to-[#ff3366] bg-clip-text text-transparent">52.5%</div>
                   </div>
                 </div>
 
-                <div className="absolute -bottom-4 -left-8 p-4 rounded-2xl bg-gradient-to-br from-[#8b5cf6]/20 to-[#8b5cf6]/5 backdrop-blur-xl border border-[#8b5cf6]/20 animate-float" style={{ animationDelay: '0.5s' }}>
+                {/* Floating card - Bottom Left */}
+                <div className="absolute -bottom-6 -left-4 z-20 px-5 py-3.5 rounded-2xl bg-[#0d1117]/90 backdrop-blur-xl border border-[#ff6b35]/30 shadow-2xl shadow-[#ff6b35]/10 animate-float" style={{ animationDelay: '0.5s' }}>
                   <div className="flex items-center gap-3">
-                    <Flame className="w-5 h-5 text-[#ff6b35]" />
-                    <span className="font-medium">2,450 kcal spáleno</span>
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#ff6b35] to-[#ff3366] flex items-center justify-center">
+                      <Flame className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <div className="text-lg font-bold text-[#ff6b35]">2,450</div>
+                      <div className="text-xs text-gray-500">kcal spáleno</div>
+                    </div>
                   </div>
                 </div>
               </div>
