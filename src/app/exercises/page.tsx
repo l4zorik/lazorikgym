@@ -74,7 +74,7 @@ export default function ExercisesPage() {
       </header>
 
       {/* Exercise Grid */}
-      <main className="flex-1 p-4 max-w-4xl mx-auto w-full">
+      <main className="flex-1 p-4 pb-24 lg:pb-4 max-w-4xl w-full" style={{ margin: '0 auto' }}>
         <div className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-4">
           Nalezeno {filteredExercises.length} cviků
         </div>

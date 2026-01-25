@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -25,11 +26,16 @@ type WorkoutItem = {
   weight: string;
 };
 
-export default function NewWorkoutPage() {
+function NewWorkoutContent() {
+  const searchParams = useSearchParams();
+  const focusPartId = searchParams.get("focus");
+
   const [isGenerating, setIsGenerating] = useState(false);
   const [workoutPlan, setWorkoutPlan] = useState<WorkoutItem[]>([]);
 
-  const weakParts = getWeakBodyParts();
+  // Get focused body part or all weak parts
+  const focusPart = focusPartId ? bodyPartsData.find(p => p.id === focusPartId) : null;
+  const weakParts = focusPart ? [focusPart] : getWeakBodyParts();
 
   const generateAIPlan = () => {
     setIsGenerating(true);
@@ -61,6 +67,14 @@ export default function NewWorkoutPage() {
     setWorkoutPlan(workoutPlan.filter((item) => item.id !== id));
   };
 
+  // Auto-generate plan if focus part is provided via URL
+  useEffect(() => {
+    if (focusPart && workoutPlan.length === 0 && !isGenerating) {
+      generateAIPlan();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusPartId]);
+
   return (
     <div className="min-h-screen bg-[var(--bg-primary)] flex flex-col">
       {/* Header */}
@@ -74,7 +88,7 @@ export default function NewWorkoutPage() {
         <h1 className="text-xl font-bold">Nový trénink</h1>
       </header>
 
-      <main className="flex-1 p-4 max-w-2xl mx-auto w-full space-y-6">
+      <main className="flex-1 p-4 pb-24 lg:pb-4 max-w-2xl w-full space-y-6" style={{ margin: '0 auto' }}>
         {/* AI Generator Section */}
         {workoutPlan.length === 0 && (
           <Card className="p-6 bg-gradient-to-br from-[var(--accent-primary)] to-[var(--accent-secondary)] border-none text-white text-center space-y-4 shadow-xl">
@@ -202,5 +216,18 @@ export default function NewWorkoutPage() {
         </div>
       )}
     </div>
+  );
+}
+
+// Wrap with Suspense for useSearchParams
+export default function NewWorkoutPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[var(--bg-primary)] flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-[var(--accent-primary)] border-t-transparent rounded-full animate-spin" />
+      </div>
+    }>
+      <NewWorkoutContent />
+    </Suspense>
   );
 }

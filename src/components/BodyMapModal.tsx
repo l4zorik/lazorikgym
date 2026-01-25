@@ -130,7 +130,7 @@ export default function BodyMapModal({ isOpen, onClose, bodyPart }: BodyMapModal
           >
             Zavřít
           </button>
-          <Link href="/workout/new" className="flex-1">
+          <Link href={`/workout/new?focus=${bodyPart.id}`} className="flex-1" onClick={onClose}>
             <button className="w-full py-3 px-6 rounded-xl bg-gradient-to-r from-[#ff6b35] to-[#e53935] text-white font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
               Zahájit trénink
               <ChevronRight className="w-5 h-5" />
