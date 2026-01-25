@@ -276,7 +276,7 @@ export default function LandingPage() {
       </section>
 
       {/* Features - Bento Grid */}
-      <section id="features" className="py-32 relative">
+      <section id="features" className="py-40 relative">
         <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 1.5rem' }}>
           <div className="text-center mb-20">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-6">
@@ -290,19 +290,19 @@ export default function LandingPage() {
           </div>
 
           {/* Bento Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Large card - AI Analysis */}
-            <div className="lg:col-span-2 group relative p-8 rounded-3xl bg-gradient-to-br from-[#ff6b35]/10 via-transparent to-[#ff3366]/10 border border-white/10 hover:border-[#ff6b35]/30 transition-all overflow-hidden">
+            <div className="lg:col-span-2 group relative p-10 rounded-[2rem] bg-gradient-to-br from-[#ff6b35]/10 via-transparent to-[#ff3366]/10 border border-white/10 hover:border-[#ff6b35]/30 transition-all overflow-hidden">
               <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-[#ff6b35]/20 to-transparent rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className="relative">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#ff6b35] to-[#ff3366] flex items-center justify-center mb-6">
-                  <Brain className="w-8 h-8 text-white" />
+                <div className="w-18 h-18 rounded-2xl bg-gradient-to-br from-[#ff6b35] to-[#ff3366] flex items-center justify-center mb-8" style={{ width: '4.5rem', height: '4.5rem' }}>
+                  <Brain className="w-9 h-9 text-white" />
                 </div>
                 <h3 className="text-2xl font-bold mb-4">AI Analýza slabých partií</h3>
-                <p className="text-gray-400 text-lg leading-relaxed mb-6 max-w-lg">
+                <p className="text-gray-400 text-lg leading-relaxed mb-8 max-w-lg">
                   Umělá inteligence analyzuje tvou postavu, identifikuje slabé partie a vytváří personalizovaný tréninkový plán pro maximální výsledky.
                 </p>
-                <div className="flex items-center gap-2 text-[#ff6b35] font-medium">
+                <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#ff6b35]/10 text-[#ff6b35] font-medium hover:bg-[#ff6b35]/20 transition-colors cursor-pointer">
                   <span>Zjistit více</span>
                   <ArrowUpRight className="w-4 h-4" />
                 </div>
@@ -310,56 +310,56 @@ export default function LandingPage() {
             </div>
 
             {/* Tracking card */}
-            <div className="group relative p-8 rounded-3xl bg-gradient-to-br from-[#3b82f6]/10 to-transparent border border-white/10 hover:border-[#3b82f6]/30 transition-all overflow-hidden">
+            <div className="group relative p-10 rounded-[2rem] bg-gradient-to-br from-[#3b82f6]/10 to-transparent border border-white/10 hover:border-[#3b82f6]/30 transition-all overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-[#3b82f6]/20 to-transparent rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className="relative">
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#3b82f6] to-[#8b5cf6] flex items-center justify-center mb-6">
-                  <BarChart3 className="w-7 h-7 text-white" />
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#3b82f6] to-[#8b5cf6] flex items-center justify-center mb-8">
+                  <BarChart3 className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-xl font-bold mb-3">Sledování pokroku</h3>
-                <p className="text-gray-400 leading-relaxed">
+                <h3 className="text-xl font-bold mb-4">Sledování pokroku</h3>
+                <p className="text-gray-400 leading-relaxed text-base">
                   Vizualizuj svůj progres s interaktivními grafy a statistikami.
                 </p>
               </div>
             </div>
 
             {/* Nutrition card */}
-            <div className="group relative p-8 rounded-3xl bg-gradient-to-br from-[#10b981]/10 to-transparent border border-white/10 hover:border-[#10b981]/30 transition-all overflow-hidden">
+            <div className="group relative p-10 rounded-[2rem] bg-gradient-to-br from-[#10b981]/10 to-transparent border border-white/10 hover:border-[#10b981]/30 transition-all overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-[#10b981]/20 to-transparent rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className="relative">
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#10b981] to-[#059669] flex items-center justify-center mb-6">
-                  <Utensils className="w-7 h-7 text-white" />
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#10b981] to-[#059669] flex items-center justify-center mb-8">
+                  <Utensils className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-xl font-bold mb-3">Výživa na míru</h3>
-                <p className="text-gray-400 leading-relaxed">
+                <h3 className="text-xl font-bold mb-4">Výživa na míru</h3>
+                <p className="text-gray-400 leading-relaxed text-base">
                   Jídelníčky s makry, recepty a nákupními seznamy.
                 </p>
               </div>
             </div>
 
             {/* Plans card */}
-            <div className="group relative p-8 rounded-3xl bg-gradient-to-br from-[#8b5cf6]/10 to-transparent border border-white/10 hover:border-[#8b5cf6]/30 transition-all overflow-hidden">
+            <div className="group relative p-10 rounded-[2rem] bg-gradient-to-br from-[#8b5cf6]/10 to-transparent border border-white/10 hover:border-[#8b5cf6]/30 transition-all overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-[#8b5cf6]/20 to-transparent rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className="relative">
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#8b5cf6] to-[#7c3aed] flex items-center justify-center mb-6">
-                  <Calendar className="w-7 h-7 text-white" />
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#8b5cf6] to-[#7c3aed] flex items-center justify-center mb-8">
+                  <Calendar className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-xl font-bold mb-3">Tréninkové plány</h3>
-                <p className="text-gray-400 leading-relaxed">
+                <h3 className="text-xl font-bold mb-4">Tréninkové plány</h3>
+                <p className="text-gray-400 leading-relaxed text-base">
                   50+ plánů od začátečníků po pokročilé.
                 </p>
               </div>
             </div>
 
             {/* Community card */}
-            <div className="group relative p-8 rounded-3xl bg-gradient-to-br from-[#f59e0b]/10 to-transparent border border-white/10 hover:border-[#f59e0b]/30 transition-all overflow-hidden">
+            <div className="group relative p-10 rounded-[2rem] bg-gradient-to-br from-[#f59e0b]/10 to-transparent border border-white/10 hover:border-[#f59e0b]/30 transition-all overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-[#f59e0b]/20 to-transparent rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className="relative">
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#f59e0b] to-[#d97706] flex items-center justify-center mb-6">
-                  <Users className="w-7 h-7 text-white" />
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#f59e0b] to-[#d97706] flex items-center justify-center mb-8">
+                  <Users className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-xl font-bold mb-3">Komunita</h3>
-                <p className="text-gray-400 leading-relaxed">
+                <h3 className="text-xl font-bold mb-4">Komunita</h3>
+                <p className="text-gray-400 leading-relaxed text-base">
                   Sdílej úspěchy a motivuj se s ostatními.
                 </p>
               </div>
@@ -369,7 +369,7 @@ export default function LandingPage() {
       </section>
 
       {/* Body Map Section */}
-      <section id="body-map" className="py-32 relative">
+      <section id="body-map" className="py-40 relative">
         <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] via-[#0a0a0a] to-[#030303]" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-[#ff6b35]/10 to-[#ff3366]/10 rounded-full blur-[200px]" />
 
