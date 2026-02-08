@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import {
   Activity,
@@ -26,18 +26,78 @@ import {
   Smile,
   Info,
   BarChart3,
+  Droplets,
+  Check,
+  Sparkles,
+  Scale,
+  Layers,
+  BookOpen,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { bodyPartsData, getWeakBodyParts } from "@/lib/data";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 import BodyMapModal from "@/components/BodyMapModal";
 import BodyPartGrid from "@/components/BodyPartGrid";
 import AIAssistantCard from "@/components/AIAssistantCard";
-import { BodyPart } from "@/types";
+import { BodyPart, WorkoutSession, ScheduledWorkout } from "@/types";
+import { MobileNav } from "@/components/MobileNav";
+import { usePlan } from "@/hooks/usePlan";
+
+import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+
+type LucideIcon = React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
+
+const workoutTypeIcons: Record<string, { color: string; icon: LucideIcon }> = {
+  strength: { color: "#ff6b35", icon: Dumbbell },
+  cardio: { color: "#3b82f6", icon: Target },
+  flexibility: { color: "#8b5cf6", icon: Clock },
+  rest: { color: "#10b981", icon: Clock },
+  hiit: { color: "#f59e0b", icon: Flame },
+};
 
 export default function DashboardPage() {
   const { user, logout } = useAuth();
+  const router = useRouter();
   const [selectedBodyPart, setSelectedBodyPart] = useState<BodyPart | null>(null);
+
+  const handleLogout = () => {
+    logout();
+    router.push("/");
+  };
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [history] = useLocalStorage<WorkoutSession[]>("workout_history", []);
+  const [scheduledWorkouts, setScheduledWorkouts, isHydrated] = useLocalStorage<ScheduledWorkout[]>("scheduled_workouts", []);
+  const [showAllUpcoming, setShowAllUpcoming] = useState(false);
+  const [today, setToday] = useState<Date | null>(null);
+  const { activeWorkoutPlan, activeWorkoutPlanId, currentWeekNumber } = usePlan();
+
+  // Initialize date and seed tomorrow's workout (only after hydration)
+  useEffect(() => {
+    if (!isHydrated) return;
+    const now = new Date();
+    setToday(now);
+
+    // Seed "Push Day" for tomorrow if it's missing and no workouts exist
+    const tomorrow = new Date(now);
+    tomorrow.setDate(now.getDate() + 1);
+    const tomorrowStr = tomorrow.toISOString().split("T")[0];
+
+    const hasTomorrowWorkout = scheduledWorkouts.some(w => w.date === tomorrowStr);
+    // Only seed if there are no scheduled workouts at all (fresh start)
+    if (!hasTomorrowWorkout && scheduledWorkouts.length === 0) {
+      const seedWorkout: ScheduledWorkout = {
+        id: "seed-push-day",
+        date: tomorrowStr,
+        title: "Pondělní Push Day",
+        type: "strength",
+        duration: 60,
+        completed: false,
+        aiGenerated: true
+      };
+      setScheduledWorkouts([...scheduledWorkouts, seedWorkout]);
+    }
+  }, [isHydrated]);
 
   const handlePartClick = (part: BodyPart) => {
     setSelectedBodyPart(part);
@@ -46,23 +106,31 @@ export default function DashboardPage() {
 
   const navItems = [
     { label: "Dashboard", href: "/dashboard", icon: Activity, active: true },
+    { label: "Historie", href: "/dashboard/history", icon: Clock },
+    { label: "Akademie", href: "/dashboard/akademie", icon: BookOpen },
     { label: "Jídelníčky", href: "/dashboard/jidelnicky", icon: Utensils },
     { label: "Plány", href: "/dashboard/treninkove-plany", icon: Calendar },
-    { label: "Tipy", href: "/dashboard/tipy", icon: Lightbulb },
-    { label: "Síň slávy", href: "/dashboard/sin-slavy", icon: Trophy },
   ];
 
-  const recentWorkouts = [
-    { title: "Leg Day", date: "Včera", duration: "75 min", color: "#10b981" },
-    { title: "Pull Day", date: "Před 3 dny", duration: "60 min", color: "#3b82f6" },
-    { title: "Push Day", date: "Před 5 dní", duration: "55 min", color: "#8b5cf6" },
-  ];
+  const recentWorkouts = history
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, 3)
+    .map(s => ({
+      title: s.title,
+      date: new Date(s.date).toLocaleDateString("cs-CZ"),
+      duration: `${s.duration} min`,
+      color: "#ff6b35"
+    }));
 
   const quickLinks = [
     { label: "Nový trénink", href: "/workout/new", icon: Plus, color: "#ff6b35" },
+    { label: "Akademie", href: "/dashboard/akademie", icon: BookOpen, color: "#8b5cf6" },
     { label: "Knihovna cviků", href: "/exercises", icon: Dumbbell, color: "#3b82f6" },
+    { label: "Kalendář", href: "/dashboard/calendar", icon: Calendar, color: "#8b5cf6" },
+    { label: "Můj progres", href: "/dashboard/progress", icon: TrendingUp, color: "#10b981" },
+    { label: "Hydratace", href: "/dashboard/supplements", icon: Droplets, color: "#3b82f6" },
+    { label: "Výzvy", href: "/dashboard/challenges", icon: Trophy, color: "#f59e0b" },
     { label: "Jídelníček", href: "/dashboard/jidelnicky", icon: Utensils, color: "#10b981" },
-    { label: "Komunita", href: "/dashboard/sin-slavy", icon: Users, color: "#8b5cf6" },
   ];
 
   const exerciseBenefits = [
@@ -106,10 +174,108 @@ export default function DashboardPage() {
 
   const weakParts = getWeakBodyParts();
 
+  // Get upcoming workouts for mini calendar - memoized to prevent hydration issues
+  const upcomingWorkouts = useMemo(() => {
+    if (!today) return [];
+    return scheduledWorkouts
+      .filter(w => !w.completed && new Date(w.date) >= today)
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+      .slice(0, showAllUpcoming ? 10 : 3);
+  }, [scheduledWorkouts, today, showAllUpcoming]);
+
+  const todaysWorkouts = useMemo(() => {
+    if (!today) return [];
+    return scheduledWorkouts.filter(w => w.date === today.toISOString().split("T")[0]);
+  }, [scheduledWorkouts, today]);
+
+  // Get workouts for next 7 days grouped by day
+  const weekDays = useMemo(() => {
+    if (!today) return [];
+    return Array.from({ length: 7 }, (_, i) => {
+      const date = new Date(today);
+      date.setDate(date.getDate() + i);
+      return {
+        date,
+        dateStr: date.toISOString().split("T")[0],
+        dayName: date.toLocaleDateString("cs-CZ", { weekday: "short" }),
+        dayNum: date.getDate(),
+        isToday: i === 0,
+      };
+    });
+  }, [today]);
+
+  // Next upcoming workout
+  const nextWorkout = useMemo(() => {
+    if (!today) return null;
+    return scheduledWorkouts
+      .filter(w => !w.completed && new Date(w.date) >= today)
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0] || null;
+  }, [scheduledWorkouts, today]);
+
   // Calculate overall progress
   const overallProgress = Math.round(
     bodyPartsData.reduce((acc, part) => acc + part.progress, 0) / bodyPartsData.length
   );
+
+  // Goal-aware logic
+  const goalConfig = {
+    lose_weight: {
+      title: "Cesta za lehčím já",
+      color: "#ef4444",
+      icon: Flame,
+      stats: [
+        { label: "Spáleno", value: "3.2k", unit: "kcal", icon: Flame, color: "#ef4444" },
+        { label: "Váha", value: "-2.4", unit: "kg", icon: Scale, color: "#3b82f6" },
+        { label: "Kardio", value: "120", unit: "min", icon: Activity, color: "#10b981" },
+        { label: "Voda", value: "2.5", unit: "l", icon: Droplets, color: "#06b6d4" },
+      ],
+      focusTask: "Dnes se zaměř na 20 min svižné chůze navíc. Každý krok se počítá!",
+      insight: "Tvoje kalorické okno je dnes na 80 %. Skvělá práce s disciplínou!"
+    },
+    gain_muscle: {
+      title: "Budování síly a objemu",
+      color: "#ff6b35",
+      icon: Dumbbell,
+      stats: [
+        { label: "Objem", value: "12.5", unit: "t", icon: Dumbbell, color: "#ff6b35" },
+        { label: "Proteiny", value: "165", unit: "g", icon: Utensils, color: "#8b5cf6" },
+        { label: "Série", value: "48", unit: "tento týden", icon: Layers, color: "#10b981" },
+        { label: "Váha", value: "+1.2", unit: "kg", icon: TrendingUp, color: "#3b82f6" },
+      ],
+      focusTask: "Dnes zkus přidat 2.5 kg na svůj hlavní cvik. Progresivní přetížení je klíč!",
+      insight: "Tvé tělo regeneruje skvěle. Dnes je ideální čas na těžký Push Day."
+    },
+    strength: {
+      title: "Cesta k maximální síle",
+      color: "#8b5cf6",
+      icon: Zap,
+      stats: [
+        { label: "Power Score", value: "750", unit: "pts", icon: Zap, color: "#8b5cf6" },
+        { label: "1RM Bench", value: "110", unit: "kg", icon: Trophy, color: "#f59e0b" },
+        { label: "Objem", value: "8.2", unit: "t", icon: Dumbbell, color: "#ff6b35" },
+        { label: "Regenerace", value: "92", unit: "%", icon: Heart, color: "#ef4444" },
+      ],
+      focusTask: "Soustřeď se na techniku u dřepů. Kvalita nad kvantitou.",
+      insight: "Tvá nervová soustava je připravena na nový osobní rekord!"
+    },
+    default: {
+      title: "Tvoje fitness cesta",
+      color: "#ff6b35",
+      icon: Target,
+      stats: [
+        { label: "Tento týden", value: "3", unit: "tréninky", icon: Activity, color: "#3b82f6" },
+        { label: "Progres", value: "+2.5", unit: "%", icon: TrendingUp, color: "#10b981" },
+        { label: "Kalorie", value: "12.4k", unit: "kcal", icon: Flame, color: "#ff6b35" },
+        { label: "Streak", value: "7", unit: "dní", icon: Target, color: "#8b5cf6" },
+      ],
+      focusTask: "Dodržuj svůj plán a výsledky se dostaví. Kontinuita je základ.",
+      insight: "Vedeš si skvěle! Udržuj toto tempo a do měsíce uvidíš velkou změnu."
+    }
+  };
+
+  const currentGoal = user?.primaryGoal && goalConfig[user.primaryGoal as keyof typeof goalConfig] 
+    ? goalConfig[user.primaryGoal as keyof typeof goalConfig] 
+    : goalConfig.default;
 
   return (
     <div className="min-h-screen bg-[#030303] text-white">
@@ -148,11 +314,11 @@ export default function DashboardPage() {
                 <p className="text-sm font-medium">{user?.name || "Host"}</p>
                 <p className="text-xs text-gray-600">{user?.email}</p>
               </div>
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#ff6b35] to-[#e53935] flex items-center justify-center text-white font-bold">
+              <Link href="/dashboard/profile" className="w-10 h-10 rounded-full bg-gradient-to-br from-[#ff6b35] to-[#e53935] flex items-center justify-center text-white font-bold hover:scale-105 transition-transform">
                 {user?.name?.charAt(0) || "H"}
-              </div>
+              </Link>
               <button
-                onClick={logout}
+                onClick={handleLogout}
                 className="p-2 rounded-lg text-gray-600 hover:text-white hover:bg-white/5 transition-colors"
               >
                 <LogOut className="w-5 h-5" />
@@ -165,39 +331,74 @@ export default function DashboardPage() {
       <main className="pb-24 lg:pb-12">
         <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '2rem' }}>
 
-          {/* Welcome Section */}
+          {/* Goal-Aware Welcome & Focus Section */}
           <div className="mb-16">
-            <h1 className="text-4xl font-bold mb-3">
-              Ahoj, {user?.name?.split(' ')[0] || 'sportovče'} 👋
-            </h1>
-            <p className="text-gray-400 text-lg">Připraven na další trénink? Tvoje tělo ti poděkuje.</p>
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+              <div>
+                <h1 className="text-5xl font-black mb-3 tracking-tight">
+                  Ahoj, {user?.name?.split(' ')[0] || 'sportovče'} 👋
+                </h1>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: currentGoal.color }} />
+                  <p className="text-gray-400 text-xl font-medium">{currentGoal.title}</p>
+                </div>
+              </div>
+              
+              {/* Focus Task Widget */}
+              <div className="bg-white/[0.03] border border-white/5 p-6 rounded-3xl max-w-sm relative overflow-hidden group hover:border-[#ff6b35]/30 transition-all">
+                <div className="flex items-start gap-4 relative z-10">
+                  <div className="w-12 h-12 rounded-2xl bg-[#ff6b35]/20 flex items-center justify-center shrink-0">
+                    <Sparkles className="w-6 h-6 text-[#ff6b35]" />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-bold text-[#ff6b35] uppercase tracking-widest mb-1">Dnešní Focus</h3>
+                    <p className="text-sm text-gray-300 leading-relaxed">{currentGoal.focusTask}</p>
+                  </div>
+                </div>
+                <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-[#ff6b35]/5 rounded-full blur-2xl group-hover:bg-[#ff6b35]/10 transition-all" />
+              </div>
+            </div>
+
+            {/* Smart Insight Banner */}
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="p-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-white/5 rounded-2xl flex items-center gap-4 mb-8"
+            >
+              <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                <Brain className="w-5 h-5 text-blue-400" />
+              </div>
+              <p className="text-sm font-medium text-blue-200">
+                <span className="text-blue-400 font-bold mr-2">AI Insight:</span>
+                {currentGoal.insight}
+              </p>
+            </motion.div>
           </div>
 
-          {/* Stats Row - Full Width */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
-            {[
-              { label: "Tento týden", value: "3", unit: "tréninky", icon: Activity, color: "#3b82f6" },
-              { label: "Progres", value: "+2.5", unit: "%", icon: TrendingUp, color: "#10b981" },
-              { label: "Kalorie", value: "12.4k", unit: "kcal", icon: Flame, color: "#ff6b35" },
-              { label: "Streak", value: "7", unit: "dní", icon: Target, color: "#8b5cf6" },
-            ].map((stat, i) => (
+          {/* Dynamic Stats Row */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16 stagger-children">
+            {currentGoal.stats.map((stat, i) => (
               <div
                 key={i}
-                className="p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-white/10 transition-colors"
+                className="premium-stat-card p-6 group"
               >
                 <div className="flex items-center gap-2 mb-4">
                   <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center"
-                    style={{ backgroundColor: `${stat.color}15` }}
+                    className="w-12 h-12 rounded-xl flex items-center justify-center bg-white/5 icon-gradient transition-transform duration-300 group-hover:scale-110"
                   >
-                    <stat.icon className="w-5 h-5" style={{ color: stat.color }} />
+                    <stat.icon className="w-6 h-6 transition-transform duration-300 group-hover:scale-110" style={{ color: stat.color }} />
                   </div>
                 </div>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-bold">{stat.value}</span>
-                  <span className="text-gray-500">{stat.unit}</span>
+                  <span className="text-4xl font-bold value-shimmer">{stat.value}</span>
+                  <span className="text-gray-500 text-sm">{stat.unit}</span>
                 </div>
-                <p className="text-sm text-gray-500 mt-1">{stat.label}</p>
+                <p className="text-sm text-gray-400 mt-2">{stat.label}</p>
+
+                <div
+                  className="absolute bottom-0 left-0 right-0 h-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  style={{ background: `linear-gradient(90deg, transparent, ${stat.color}, transparent)` }}
+                />
               </div>
             ))}
           </div>
@@ -207,6 +408,46 @@ export default function DashboardPage() {
 
             {/* Left Column - Main Content */}
             <div className="lg:col-span-2 space-y-16">
+
+              {/* Wizard Promo Banner */}
+              <section className="relative group">
+                <Link href="/wizard">
+                  <div className="p-8 rounded-[2.5rem] bg-gradient-to-br from-[#ff6b35] via-[#e53935] to-[#8b5cf6] overflow-hidden relative shadow-2xl shadow-[#ff6b35]/20">
+                    <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
+                      <div className="flex-1 text-center md:text-left">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-white text-xs font-bold uppercase tracking-widest mb-4">
+                          <Sparkles className="w-3 h-3" />
+                          Novinka
+                        </div>
+                        <h2 className="text-3xl md:text-4xl font-black text-white mb-4 leading-tight">
+                          Body Diagnostics 2.0
+                        </h2>
+                        <p className="text-white/80 text-lg mb-8 max-w-md">
+                          Nech si sestavit tréninkový plán na míru podle tvých slabin a cílů.
+                        </p>
+                        <div className="flex flex-wrap gap-4 justify-center md:justify-start">
+                          <div className="flex items-center gap-2 bg-black/20 backdrop-blur-sm px-4 py-2 rounded-xl border border-white/10">
+                            <Brain className="w-4 h-4 text-white" />
+                            <span className="text-sm font-medium text-white">Chytrá analýza</span>
+                          </div>
+                          <div className="flex items-center gap-2 bg-black/20 backdrop-blur-sm px-4 py-2 rounded-xl border border-white/10">
+                            <Target className="w-4 h-4 text-white" />
+                            <span className="text-sm font-medium text-white">Slabé partie</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="relative">
+                        <div className="w-40 h-40 md:w-56 md:h-56 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-xl border border-white/20 group-hover:scale-105 transition-transform duration-500">
+                          <TrendingUp className="w-20 h-20 md:w-28 md:h-28 text-white animate-pulse" />
+                        </div>
+                      </div>
+                    </div>
+                    {/* Decorative elements */}
+                    <div className="absolute -top-24 -right-24 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
+                    <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-black/20 rounded-full blur-3xl" />
+                  </div>
+                </Link>
+              </section>
 
               {/* Body Part Grid */}
               <section>
@@ -302,20 +543,42 @@ export default function DashboardPage() {
 
               {/* Next Workout */}
               <section>
-                <div className="p-10 rounded-3xl bg-gradient-to-br from-[#ff6b35] to-[#e53935] relative overflow-hidden">
+                <div className={`p-10 rounded-3xl relative overflow-hidden ${
+                  nextWorkout?.planId
+                    ? "bg-gradient-to-br from-[#8b5cf6] to-[#6366f1]"
+                    : "bg-gradient-to-br from-[#ff6b35] to-[#e53935]"
+                }`}>
                   <div className="relative z-10">
                     <div className="flex items-center gap-2 mb-6">
                       <Clock className="w-5 h-5 text-white/60" />
                       <span className="text-white/60">Další trénink</span>
+                      {nextWorkout?.planId && (
+                        <span className="px-2 py-0.5 rounded-full bg-white/20 text-white text-xs font-bold flex items-center gap-1">
+                          <Layers className="w-3 h-3" />
+                          Z plánu
+                        </span>
+                      )}
                     </div>
                     <h2 className="text-3xl font-bold text-white mb-3">
-                      Push Day
+                      {nextWorkout?.title || "Žádný naplánovaný trénink"}
                     </h2>
-                    <p className="text-white/70 text-lg mb-8">Hrudník, Ramena, Triceps • 6 cviků • ~60 min</p>
-                    <Link href="/workout/new">
-                      <button className="px-8 py-4 rounded-2xl bg-white text-[#ff6b35] font-bold text-lg flex items-center gap-3 hover:bg-white/90 transition-colors shadow-xl">
+                    <p className="text-white/70 text-lg mb-8">
+                      {nextWorkout ? (
+                        <>
+                          {nextWorkout.exercises?.join(", ") || workoutTypeIcons[nextWorkout.type]?.color ? `${nextWorkout.type === "strength" ? "Posilování" : nextWorkout.type === "cardio" ? "Kardio" : nextWorkout.type}` : "Trénink"}
+                          {" • ~"}{nextWorkout.duration} min
+                          {nextWorkout.date && ` • ${new Date(nextWorkout.date).toLocaleDateString("cs-CZ", { weekday: "long", day: "numeric", month: "short" })}`}
+                        </>
+                      ) : (
+                        "Naplánuj si svůj další trénink v kalendáři"
+                      )}
+                    </p>
+                    <Link href={nextWorkout ? "/workout/new" : "/dashboard/calendar"}>
+                      <button className={`px-8 py-4 rounded-2xl bg-white font-bold text-lg flex items-center gap-3 hover:bg-white/90 transition-colors shadow-xl ${
+                        nextWorkout?.planId ? "text-[#8b5cf6]" : "text-[#ff6b35]"
+                      }`}>
                         <Play className="w-6 h-6" />
-                        Zahájit trénink
+                        {nextWorkout ? "Zahájit trénink" : "Naplánovat trénink"}
                       </button>
                     </Link>
                   </div>
@@ -406,6 +669,50 @@ export default function DashboardPage() {
               {/* AI Assistant */}
               <AIAssistantCard weakBodyParts={weakParts} />
 
+              {/* Active Plan Widget */}
+              {activeWorkoutPlan && (
+                <section className="p-5 rounded-2xl bg-gradient-to-br from-[#8b5cf6]/10 to-[#6366f1]/5 border border-[#8b5cf6]/20">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-xl bg-[#8b5cf6]/20 flex items-center justify-center">
+                      <Layers className="w-5 h-5 text-[#8b5cf6]" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-sm font-bold truncate">{activeWorkoutPlan.name}</h3>
+                      <p className="text-xs text-gray-500">{activeWorkoutPlan.splitType}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs text-gray-400">Týden {currentWeekNumber}</span>
+                    <span className="text-xs font-bold text-[#8b5cf6]">
+                      {scheduledWorkouts.filter(w => w.planId === activeWorkoutPlanId && w.completed).length}/
+                      {activeWorkoutPlan.weeklySchedule?.filter(d => !d.isRest).length || 0} dnů
+                    </span>
+                  </div>
+                  <div className="h-2 bg-white/5 rounded-full overflow-hidden mb-3">
+                    <div
+                      className="h-full bg-gradient-to-r from-[#8b5cf6] to-[#6366f1] rounded-full transition-all"
+                      style={{
+                        width: `${
+                          activeWorkoutPlan.weeklySchedule?.filter(d => !d.isRest).length
+                            ? Math.round(
+                                (scheduledWorkouts.filter(w => w.planId === activeWorkoutPlanId && w.completed).length /
+                                  activeWorkoutPlan.weeklySchedule.filter(d => !d.isRest).length) *
+                                  100
+                              )
+                            : 0
+                        }%`
+                      }}
+                    />
+                  </div>
+                  <Link href="/dashboard/treninkove-plany">
+                    <button className="w-full py-2 text-xs text-[#8b5cf6] font-bold hover:underline flex items-center justify-center gap-1">
+                      Zobrazit plán
+                      <ChevronRight className="w-3 h-3" />
+                    </button>
+                  </Link>
+                </section>
+              )}
+
               {/* Quick Links */}
               <section>
                 <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-6">
@@ -432,13 +739,193 @@ export default function DashboardPage() {
                 </div>
               </section>
 
+              {/* Mini Calendar / Upcoming Workouts */}
+              <section>
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-2">
+                    <Calendar className="w-4 h-4" />
+                    Kalendář
+                  </h2>
+                  <Link href="/dashboard/calendar" className="text-xs text-[#ff6b35] font-medium hover:underline flex items-center gap-1">
+                    Celý kalendář
+                    <ChevronRight className="w-3 h-3" />
+                  </Link>
+                </div>
+
+                {/* Weekly overview */}
+                <div className="mb-6">
+                  {!today ? (
+                    // Loading skeleton
+                    <div className="grid grid-cols-7 gap-1 mb-4">
+                      {Array.from({ length: 7 }).map((_, i) => (
+                        <div key={i} className="flex flex-col items-center p-2 rounded-xl bg-white/[0.02] animate-pulse">
+                          <div className="w-6 h-3 bg-white/10 rounded mb-1" />
+                          <div className="w-5 h-5 bg-white/10 rounded-full" />
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-7 gap-1 mb-4">
+                      {weekDays.map((day, i) => {
+                        const dayWorkouts = scheduledWorkouts.filter(w => w.date === day.dateStr);
+                        const hasWorkout = dayWorkouts.length > 0;
+                        const allCompleted = hasWorkout && dayWorkouts.every(w => w.completed);
+
+                        return (
+                          <Link
+                            key={i}
+                            href="/dashboard/calendar"
+                            className={`
+                              flex flex-col items-center p-2 rounded-xl transition-all cursor-pointer
+                              ${day.isToday 
+                                ? "bg-[#ff6b35]/20 border border-[#ff6b35]/50" 
+                                : "bg-white/[0.02] hover:bg-white/[0.05] border border-transparent hover:border-white/10"
+                              }
+                            `}
+                          >
+                            <span className={`text-[10px] uppercase font-medium mb-1 ${day.isToday ? "text-[#ff6b35]" : "text-gray-500"}`}>
+                              {day.dayName}
+                            </span>
+                            <span className={`text-sm font-bold mb-1 ${day.isToday ? "text-white" : "text-gray-300"}`}>
+                              {day.dayNum}
+                            </span>
+                            {hasWorkout && (
+                              <div className="flex gap-0.5">
+                                {dayWorkouts.slice(0, 2).map((w, idx) => (
+                                  <div
+                                    key={idx}
+                                    className={`w-1 h-1 rounded-full ${w.completed ? "bg-[#10b981]" : "bg-[#ff6b35]"}`}
+                                  />
+                                ))}
+                              </div>
+                            )}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* Today's summary */}
+                  {todaysWorkouts.length > 0 && (
+                    <div className="p-4 rounded-xl bg-gradient-to-r from-[#ff6b35]/10 to-transparent border border-[#ff6b35]/20 mb-4">
+                      <p className="text-xs text-gray-400 mb-2">Dnešní tréninky</p>
+                      <div className="space-y-2">
+                        {todaysWorkouts.map((workout) => {
+                          const typeInfo = workoutTypeIcons[workout.type];
+                          const TypeIcon = typeInfo?.icon || Dumbbell;
+                          return (
+                            <div key={workout.id} className="flex items-center gap-2">
+                              <div 
+                                className="w-6 h-6 rounded-lg flex items-center justify-center"
+                                style={{ backgroundColor: `${typeInfo?.color}20` }}
+                              >
+                                <TypeIcon className="w-3 h-3" style={{ color: typeInfo?.color }} />
+                              </div>
+                              <span className="text-sm font-medium truncate flex-1">{workout.title}</span>
+                              {workout.completed && <Check className="w-4 h-4 text-[#10b981]" />}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Upcoming workouts list */}
+                <div className="space-y-3">
+                  <p className="text-xs text-gray-500 uppercase font-semibold">Nadcházející</p>
+                  <AnimatePresence mode="popLayout">
+                    {upcomingWorkouts.length > 0 ? (
+                      upcomingWorkouts.map((workout, i) => {
+                        const typeInfo = workoutTypeIcons[workout.type];
+                        const TypeIcon = typeInfo?.icon || Dumbbell;
+                        const workoutDate = new Date(workout.date);
+                        const isToday = today ? workoutDate.toDateString() === today.toDateString() : false;
+                        const isTomorrow = today ? new Date(today.getTime() + 86400000).toDateString() === workoutDate.toDateString() : false;
+
+                        return (
+                          <motion.div
+                            key={workout.id}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ delay: i * 0.05 }}
+                            className="group"
+                          >
+                            <Link href="/dashboard/calendar">
+                              <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/5 hover:border-white/10 transition-all">
+                                {/* Date badge */}
+                                <div className="flex flex-col items-center justify-center w-10 h-10 rounded-lg bg-white/5 flex-shrink-0">
+                                  <span className="text-[10px] text-gray-500 uppercase">
+                                    {isToday ? "DNES" : isTomorrow ? "ZÍTRA" : workoutDate.toLocaleDateString("cs-CZ", { weekday: "narrow" })}
+                                  </span>
+                                  <span className="text-sm font-bold">{workoutDate.getDate()}</span>
+                                </div>
+
+                                {/* Content */}
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2">
+                                    <p className="font-medium text-sm truncate">{workout.title}</p>
+                                    {workout.aiGenerated && (
+                                      <Sparkles className="w-3 h-3 text-[#8b5cf6] flex-shrink-0" />
+                                    )}
+                                  </div>
+                                  <p className="text-xs text-gray-500 flex items-center gap-1">
+                                    <Clock className="w-3 h-3" />
+                                    {workout.duration} min
+                                  </p>
+                                </div>
+
+                                {/* Type icon */}
+                                <div 
+                                  className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                                  style={{ backgroundColor: `${typeInfo?.color}15` }}
+                                >
+                                  <TypeIcon className="w-4 h-4" style={{ color: typeInfo?.color }} />
+                                </div>
+                              </div>
+                            </Link>
+                          </motion.div>
+                        );
+                      })
+                    ) : (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="text-center py-6"
+                      >
+                        <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-3">
+                          <Calendar className="w-6 h-6 text-gray-600" />
+                        </div>
+                        <p className="text-sm text-gray-500">Žádné naplánované tréninky</p>
+                        <Link href="/dashboard/calendar">
+                          <button className="mt-3 text-xs text-[#ff6b35] hover:underline flex items-center gap-1 mx-auto">
+                            Naplánovat trénink
+                            <Plus className="w-3 h-3" />
+                          </button>
+                        </Link>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                  
+                  {today && upcomingWorkouts.length > 0 && upcomingWorkouts.length < scheduledWorkouts.filter(w => !w.completed && new Date(w.date) >= today).length && (
+                    <button
+                      onClick={() => setShowAllUpcoming(!showAllUpcoming)}
+                      className="w-full py-2 text-xs text-gray-500 hover:text-white transition-colors"
+                    >
+                      {showAllUpcoming ? "Zobrazit méně" : "Zobrazit vše"}
+                    </button>
+                  )}
+                </div>
+              </section>
+
               {/* Recent Activity */}
               <section>
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
                     Poslední aktivita
                   </h2>
-                  <button className="text-xs text-[#ff6b35] font-medium hover:underline">Vše</button>
+                  <Link href="/dashboard/history" className="text-xs text-[#ff6b35] font-medium hover:underline">Vše</Link>
                 </div>
                 <div className="space-y-4">
                   {recentWorkouts.map((workout, i) => (
@@ -481,33 +968,7 @@ export default function DashboardPage() {
         </div>
       </main>
 
-      {/* Mobile Bottom Navigation */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-[#0a0a0a]/90 backdrop-blur-xl border-t border-white/5">
-        <div className="flex justify-around items-center h-16 px-4">
-          <Link href="/dashboard" className="flex flex-col items-center gap-1 text-[#ff6b35]">
-            <Activity className="w-5 h-5" />
-            <span className="text-[10px] font-medium">Domů</span>
-          </Link>
-          <Link href="/exercises" className="flex flex-col items-center gap-1 text-gray-600 hover:text-white">
-            <Dumbbell className="w-5 h-5" />
-            <span className="text-[10px] font-medium">Cviky</span>
-          </Link>
-          <Link
-            href="/workout/new"
-            className="w-14 h-14 -mt-6 rounded-full bg-gradient-to-br from-[#ff6b35] to-[#e53935] flex items-center justify-center shadow-lg shadow-orange-500/20"
-          >
-            <Plus className="w-6 h-6 text-white" />
-          </Link>
-          <Link href="/dashboard/treninkove-plany" className="flex flex-col items-center gap-1 text-gray-600 hover:text-white">
-            <Calendar className="w-5 h-5" />
-            <span className="text-[10px] font-medium">Plány</span>
-          </Link>
-          <Link href="/dashboard/sin-slavy" className="flex flex-col items-center gap-1 text-gray-600 hover:text-white">
-            <Trophy className="w-5 h-5" />
-            <span className="text-[10px] font-medium">Síň</span>
-          </Link>
-        </div>
-      </nav>
+      <MobileNav />
 
       {/* Modal */}
       <BodyMapModal

@@ -28,14 +28,20 @@ export default function BodyMap({ onPartClick }: BodyMapProps) {
     if (isWeak) {
       return {
         fill: isHovered ? "#ff6b35" : "#e53935",
-        filter: "drop-shadow(0 0 8px rgba(255, 107, 53, 0.6))",
+        filter: isHovered
+          ? "drop-shadow(0 0 15px rgba(255, 107, 53, 0.8)) drop-shadow(0 0 30px rgba(255, 107, 53, 0.4))"
+          : "drop-shadow(0 0 8px rgba(255, 107, 53, 0.6))",
         cursor: "pointer",
+        transform: isHovered ? "scale(1.05)" : "scale(1)",
+        transformOrigin: "center",
       };
     }
     return {
       fill: isHovered ? "#666666" : "#333333",
-      filter: "none",
+      filter: isHovered ? "drop-shadow(0 0 10px rgba(102, 102, 102, 0.5))" : "none",
       cursor: "pointer",
+      transform: isHovered ? "scale(1.03)" : "scale(1)",
+      transformOrigin: "center",
     };
   }, [hoveredPart]);
 
@@ -81,12 +87,19 @@ export default function BodyMap({ onPartClick }: BodyMapProps) {
 
   return (
     <div className="grid md:grid-cols-2 gap-12 items-center max-w-5xl" style={{ margin: '0 auto' }}>
-      {/* SVG Body Figure */}
-      <div className="relative flex justify-center items-center">
+      {/* SVG Body Figure with 3D perspective */}
+      <div className="relative flex justify-center items-center" style={{ perspective: '1000px' }}>
+        {/* Background glow orbs */}
+        <div className="absolute top-1/4 left-1/4 w-40 h-40 bg-[#ff6b35]/10 rounded-full blur-3xl animate-pulse-glow" />
+        <div className="absolute bottom-1/4 right-1/4 w-32 h-32 bg-[#e53935]/10 rounded-full blur-3xl animate-pulse-glow" style={{ animationDelay: '1s' }} />
+
         <svg
           viewBox="0 0 200 400"
-          className="w-full max-w-[300px] h-auto"
-          style={{ margin: '0 auto' }}
+          className="w-full max-w-[300px] h-auto relative z-10 transition-transform duration-500 hover:scale-105"
+          style={{
+            margin: '0 auto',
+            filter: 'drop-shadow(0 20px 40px rgba(0, 0, 0, 0.3))',
+          }}
           role="img"
           aria-label="Interaktivní mapa těla - klikni na svalovou skupinu pro detaily"
         >
@@ -144,31 +157,38 @@ export default function BodyMap({ onPartClick }: BodyMapProps) {
           ))}
         </svg>
 
-        {/* Hover tooltip */}
+        {/* Premium hover tooltip */}
         {hoveredPartData && (
           <div
-            className="absolute top-4 left-1/2 -translate-x-1/2 px-4 py-2 rounded-lg bg-[#1a1a1a] border border-[#2a2a2a] shadow-lg z-10"
+            className="absolute top-4 left-1/2 -translate-x-1/2 px-5 py-3 rounded-xl bg-[#1a1a1a]/95 border border-[#ff6b35]/30 shadow-2xl shadow-[#ff6b35]/10 z-20 backdrop-blur-sm animate-fade-in"
             role="tooltip"
             aria-live="polite"
           >
-            <p className="text-sm font-semibold text-white text-center">
+            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-[#ff6b35]/5 to-transparent" />
+            <p className="relative text-base font-bold text-white text-center">
               {hoveredPartData.name}
             </p>
-            <p className="text-xs text-[#666666] text-center">
-              Klikni pro detaily
+            <p className="relative text-xs text-gray-400 text-center mt-1">
+              {hoveredPartData.progress}% • Klikni pro detaily
             </p>
+            {/* Arrow */}
+            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-[#1a1a1a] border-r border-b border-[#ff6b35]/30 rotate-45" />
           </div>
         )}
       </div>
 
-      {/* Muscle Grid */}
-      <div className="space-y-3">
-        <h3 className="text-xl font-bold text-white mb-6 text-center md:text-left">
+      {/* Muscle Grid with premium cards */}
+      <div className="space-y-4">
+        <h3 className="text-xl font-bold text-white mb-6 text-center md:text-left flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#ff6b35]/20 to-[#e53935]/20 flex items-center justify-center">
+            <span className="text-lg">💪</span>
+          </div>
           Přehled partií
         </h3>
-        <div className="grid gap-3" role="list" aria-label="Seznam svalových skupin">
-          {bodyPartsData.map((part) => {
+        <div className="grid gap-3 stagger-children" role="list" aria-label="Seznam svalových skupin">
+          {bodyPartsData.map((part, index) => {
             const isWeak = part.progress < 45;
+            const isHovered = hoveredPart === part.id;
             return (
               <button
                 key={part.id}
@@ -179,19 +199,22 @@ export default function BodyMap({ onPartClick }: BodyMapProps) {
                 onBlur={() => setHoveredPart(null)}
                 aria-label={`${part.name} - ${part.progress}%${isWeak ? ", slabá partie, klikni pro tréninkový plán" : ""}`}
                 className={`
-                  w-full p-4 rounded-xl text-left transition-all duration-300
-                  ${hoveredPart === part.id ? "bg-[#222222] scale-[1.02]" : "bg-[#141414]"}
-                  ${isWeak ? "border-2 border-[#ff6b35]/50" : "border border-[#2a2a2a]"}
-                  hover:border-[#ff6b35] focus:outline-none focus:ring-2 focus:ring-[#ff6b35] focus:ring-offset-2 focus:ring-offset-[#030303]
+                  premium-body-card w-full p-4 text-left group
+                  ${isHovered ? "scale-[1.02]" : ""}
+                  ${isWeak ? "glow-weak-pulse" : ""}
                 `}
+                style={{
+                  animationDelay: `${index * 50}ms`,
+                  borderColor: isWeak ? 'rgba(255, 107, 53, 0.4)' : isHovered ? 'rgba(255, 107, 53, 0.3)' : undefined,
+                }}
               >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-semibold text-white">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="font-semibold text-white group-hover:text-[#ff6b35] transition-colors duration-300">
                     {part.name}
                   </span>
                   <span
-                    className={`text-sm font-bold ${
-                      isWeak ? "text-[#ff6b35]" : "text-[#a0a0a0]"
+                    className={`text-sm font-bold transition-all duration-300 ${
+                      isWeak ? "text-[#ff6b35]" : "text-gray-500 group-hover:text-emerald-400"
                     }`}
                     aria-hidden="true"
                   >
@@ -207,15 +230,20 @@ export default function BodyMap({ onPartClick }: BodyMapProps) {
                   aria-label={`Progres ${part.name}`}
                 >
                   <div
-                    className={`h-full rounded-full transition-all duration-500 ${
-                      isWeak ? "bg-gradient-to-r from-[#ff6b35] to-[#e53935]" : "bg-[#666666]"
+                    className={`h-full rounded-full transition-all duration-700 progress-animated ${
+                      isWeak
+                        ? "bg-gradient-to-r from-[#ff6b35] to-[#e53935]"
+                        : "bg-gradient-to-r from-gray-600 to-gray-500 group-hover:from-emerald-500 group-hover:to-green-500"
                     }`}
                     style={{ width: `${part.progress}%` }}
                   />
                 </div>
                 {isWeak && (
-                  <p className="text-xs text-[#ff6b35] mt-2 flex items-center gap-1" aria-hidden="true">
-                    <span className="w-2 h-2 rounded-full bg-[#ff6b35] animate-pulse" />
+                  <p className="text-xs text-[#ff6b35] mt-2.5 flex items-center gap-2" aria-hidden="true">
+                    <span className="relative">
+                      <span className="w-2 h-2 rounded-full bg-[#ff6b35] inline-block" />
+                      <span className="absolute inset-0 w-2 h-2 rounded-full bg-[#ff6b35] animate-ping" />
+                    </span>
                     Slabá partie - klikni pro plán
                   </p>
                 )}

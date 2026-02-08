@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -16,9 +16,12 @@ import {
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import { bodyPartsData, getWeakBodyParts } from "@/lib/data";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { WorkoutSession, WorkoutSessionItem } from "@/types";
 
 type WorkoutItem = {
   id: string;
+  exerciseId: string;
   exercise: string;
   part: string;
   sets: number;
@@ -28,10 +31,13 @@ type WorkoutItem = {
 
 function NewWorkoutContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const focusPartId = searchParams.get("focus");
 
   const [isGenerating, setIsGenerating] = useState(false);
   const [workoutPlan, setWorkoutPlan] = useState<WorkoutItem[]>([]);
+  const [history, setHistory] = useLocalStorage<WorkoutSession[]>("workout_history", []);
+  const [startTime] = useState<number>(Date.now());
 
   // Get focused body part or all weak parts
   const focusPart = focusPartId ? bodyPartsData.find(p => p.id === focusPartId) : null;
@@ -49,6 +55,7 @@ function NewWorkoutContent() {
         selected.forEach((ex) => {
           newPlan.push({
             id: Math.random().toString(36).substr(2, 9),
+            exerciseId: ex.id,
             exercise: ex.name,
             part: area.name,
             sets: 3,
@@ -67,6 +74,39 @@ function NewWorkoutContent() {
     setWorkoutPlan(workoutPlan.filter((item) => item.id !== id));
   };
 
+  const updateExercise = (id: string, field: keyof WorkoutItem, value: any) => {
+    setWorkoutPlan(workoutPlan.map(item => 
+      item.id === id ? { ...item, [field]: value } : item
+    ));
+  };
+
+  const handleFinishWorkout = () => {
+    if (workoutPlan.length === 0) return;
+
+    const duration = Math.round((Date.now() - startTime) / 60000);
+    
+    const newSession: WorkoutSession = {
+      id: Math.random().toString(36).substr(2, 9),
+      date: new Date(),
+      duration: duration > 0 ? duration : 45, // Default to 45 if too short
+      title: workoutPlan.length > 0 ? `${workoutPlan[0].part} & více` : "Trénink",
+      items: workoutPlan.map(item => ({
+        id: item.id,
+        exerciseId: item.exerciseId,
+        exerciseName: item.exercise,
+        bodyPart: item.part,
+        sets: Array.from({ length: item.sets }).map(() => ({
+          reps: item.reps,
+          weight: item.weight || 0,
+          completed: true
+        }))
+      }))
+    };
+
+    setHistory([...history, newSession]);
+    router.push("/dashboard?completed=true");
+  };
+
   // Auto-generate plan if focus part is provided via URL
   useEffect(() => {
     if (focusPart && workoutPlan.length === 0 && !isGenerating) {
@@ -76,12 +116,12 @@ function NewWorkoutContent() {
   }, [focusPartId]);
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)] flex flex-col">
+    <div className="min-h-screen bg-[#030303] flex flex-col">
       {/* Header */}
-      <header className="p-4 flex items-center gap-4 bg-[var(--bg-secondary)] border-b border-[var(--border-color)] sticky top-0 z-10">
+      <header className="p-4 flex items-center gap-4 bg-[#0a0a0a] border-b border-[#2a2a2a] sticky top-0 z-10">
         <Link
           href="/dashboard"
-          className="p-2 -ml-2 rounded-lg hover:bg-[var(--bg-card)] transition-colors"
+          className="p-2 -ml-2 rounded-lg hover:bg-[#141414] transition-colors"
         >
           <ArrowLeft className="w-6 h-6" />
         </Link>
@@ -91,7 +131,7 @@ function NewWorkoutContent() {
       <main className="flex-1 p-4 pb-24 lg:pb-4 max-w-2xl w-full space-y-6" style={{ margin: '0 auto' }}>
         {/* AI Generator Section */}
         {workoutPlan.length === 0 && (
-          <Card className="p-6 bg-gradient-to-br from-[var(--accent-primary)] to-[var(--accent-secondary)] border-none text-white text-center space-y-4 shadow-xl">
+          <Card className="p-6 bg-gradient-to-br from-[#ff6b35] to-[#e53935] border-none text-white text-center space-y-4 shadow-xl">
             <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mx-auto backdrop-blur-sm">
               <Sparkles className="w-8 h-8 text-yellow-300" />
             </div>
@@ -118,7 +158,7 @@ function NewWorkoutContent() {
             <Button
               onClick={generateAIPlan}
               disabled={isGenerating}
-              className="w-full bg-white text-[var(--accent-primary)] hover:bg-white/90"
+              className="w-full bg-white text-[#ff6b35] hover:bg-white/90"
               size="lg"
             >
               {isGenerating ? (
@@ -146,14 +186,14 @@ function NewWorkoutContent() {
             >
               <div className="flex justify-between items-start mb-3">
                 <div>
-                  <span className="text-xs font-bold text-[var(--accent-primary)] uppercase tracking-wider px-2 py-1 rounded-md bg-[var(--accent-primary)]/10">
+                  <span className="text-xs font-bold text-[#ff6b35] uppercase tracking-wider px-2 py-1 rounded-md bg-[#ff6b35]/10">
                     {item.part}
                   </span>
                   <h3 className="font-bold text-lg mt-1">{item.exercise}</h3>
                 </div>
                 <button
                   onClick={() => removeExercise(item.id)}
-                  className="p-2 text-[var(--text-muted)] hover:text-[var(--error)] transition-colors"
+                  className="p-2 text-gray-600 hover:text-[#ef4444] transition-colors"
                 >
                   <Trash2 className="w-5 h-5" />
                 </button>
@@ -161,33 +201,37 @@ function NewWorkoutContent() {
 
               <div className="grid grid-cols-3 gap-3">
                 <div className="space-y-1">
-                  <label className="text-xs text-[var(--text-muted)] uppercase font-semibold">
+                  <label className="text-xs text-gray-600 uppercase font-semibold">
                     Série
                   </label>
                   <input
                     type="number"
-                    defaultValue={item.sets}
-                    className="w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-lg p-2 font-medium text-center focus:outline-none focus:border-[var(--accent-primary)]"
+                    value={item.sets}
+                    onChange={(e) => updateExercise(item.id, "sets", parseInt(e.target.value) || 0)}
+                    className="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg p-2 font-medium text-center focus:outline-none focus:border-[#ff6b35]"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs text-[var(--text-muted)] uppercase font-semibold">
+                  <label className="text-xs text-gray-600 uppercase font-semibold">
                     Opakování
                   </label>
                   <input
                     type="text"
-                    defaultValue={item.reps}
-                    className="w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-lg p-2 font-medium text-center focus:outline-none focus:border-[var(--accent-primary)]"
+                    value={item.reps}
+                    onChange={(e) => updateExercise(item.id, "reps", e.target.value)}
+                    className="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg p-2 font-medium text-center focus:outline-none focus:border-[#ff6b35]"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs text-[var(--text-muted)] uppercase font-semibold">
+                  <label className="text-xs text-gray-600 uppercase font-semibold">
                     Váha (kg)
                   </label>
                   <input
                     type="number"
+                    value={item.weight}
+                    onChange={(e) => updateExercise(item.id, "weight", e.target.value)}
                     placeholder="-"
-                    className="w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-lg p-2 font-medium text-center focus:outline-none focus:border-[var(--accent-primary)]"
+                    className="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg p-2 font-medium text-center focus:outline-none focus:border-[#ff6b35]"
                   />
                 </div>
               </div>
@@ -197,7 +241,7 @@ function NewWorkoutContent() {
           {/* Add Manual Exercise Button */}
           {workoutPlan.length > 0 && (
             <Link href="/exercises">
-              <button className="w-full py-4 border-2 border-dashed border-[var(--border-light)] rounded-xl text-[var(--text-muted)] font-medium flex items-center justify-center gap-2 hover:bg-[var(--bg-card)] hover:border-[var(--accent-primary)] transition-colors">
+              <button className="w-full py-4 border-2 border-dashed border-[#3a3a3a] rounded-xl text-gray-600 font-medium flex items-center justify-center gap-2 hover:bg-[#141414] hover:border-[#ff6b35] transition-colors">
                 <Plus className="w-5 h-5" />
                 Přidat další cvik
               </button>
@@ -208,8 +252,13 @@ function NewWorkoutContent() {
 
       {/* Footer Actions */}
       {workoutPlan.length > 0 && (
-        <div className="p-4 bg-[var(--bg-secondary)] border-t border-[var(--border-color)] sticky bottom-0">
-          <Button fullWidth size="lg" className="bg-[var(--success)] hover:opacity-90">
+        <div className="p-4 bg-[#0a0a0a] border-t border-[#2a2a2a] sticky bottom-0">
+          <Button 
+            fullWidth 
+            size="lg" 
+            className="bg-[#10b981] hover:opacity-90"
+            onClick={handleFinishWorkout}
+          >
             <Save className="w-5 h-5" />
             Dokončit trénink
           </Button>

@@ -17,9 +17,10 @@ const DialogOverlay = React.forwardRef<
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
-      "fixed inset-0 z-50 bg-black/80 backdrop-blur-sm",
+      "fixed inset-0 z-50 bg-black/60 backdrop-blur-md",
       "data-[state=open]:animate-in data-[state=closed]:animate-out",
       "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+      "data-[state=open]:duration-300 data-[state=closed]:duration-200",
       className
     )}
     {...props}
@@ -31,14 +32,20 @@ const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & {
     size?: "sm" | "md" | "lg" | "xl" | "full";
+    variant?: "default" | "glass";
   }
->(({ className, children, size = "md", ...props }, ref) => {
+>(({ className, children, size = "md", variant = "default", ...props }, ref) => {
   const sizes = {
     sm: "max-w-sm",
     md: "max-w-lg",
     lg: "max-w-2xl",
     xl: "max-w-4xl",
     full: "max-w-[95vw] max-h-[95vh]",
+  };
+
+  const variants = {
+    default: "bg-[#0a0a0a] border-white/10",
+    glass: "bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10",
   };
 
   return (
@@ -49,13 +56,14 @@ const DialogContent = React.forwardRef<
         className={cn(
           "fixed left-[50%] top-[50%] z-50 w-full translate-x-[-50%] translate-y-[-50%]",
           sizes[size],
-          "bg-[#0f0f0f] border border-white/10 rounded-2xl shadow-2xl shadow-black/50",
-          "duration-200",
+          variants[variant],
+          "border rounded-2xl shadow-2xl shadow-black/50",
           "data-[state=open]:animate-in data-[state=closed]:animate-out",
           "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
           "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
           "data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%]",
           "data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]",
+          "data-[state=open]:duration-300 data-[state=closed]:duration-200",
           className
         )}
         {...props}
@@ -126,6 +134,7 @@ interface ModalProps {
   title?: string;
   children: React.ReactNode;
   size?: "sm" | "md" | "lg" | "xl" | "full";
+  variant?: "default" | "glass";
 }
 
 export default function Modal({
@@ -134,24 +143,25 @@ export default function Modal({
   title,
   children,
   size = "md",
+  variant = "default",
 }: ModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent size={size}>
+      <DialogContent size={size} variant={variant}>
         {title && (
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
-            <DialogClose className="p-2 rounded-lg text-gray-500 hover:text-white hover:bg-white/5 transition-colors focus:outline-none focus:ring-2 focus:ring-[#ff6b35]">
+            <DialogPrimitive.Close className="p-2 rounded-xl text-gray-500 hover:text-white hover:bg-white/[0.08] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#ff6b35]/50 focus:ring-offset-2 focus:ring-offset-[#030303]">
               <X className="w-5 h-5" />
               <span className="sr-only">Zavřít</span>
-            </DialogClose>
+            </DialogPrimitive.Close>
           </DialogHeader>
         )}
         {!title && (
-          <DialogClose className="absolute right-4 top-4 p-2 rounded-lg text-gray-500 hover:text-white hover:bg-white/5 transition-colors focus:outline-none focus:ring-2 focus:ring-[#ff6b35]">
+          <DialogPrimitive.Close className="absolute right-4 top-4 p-2 rounded-xl text-gray-500 hover:text-white hover:bg-white/[0.08] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#ff6b35]/50 focus:ring-offset-2 focus:ring-offset-[#030303]">
             <X className="w-5 h-5" />
             <span className="sr-only">Zavřít</span>
-          </DialogClose>
+          </DialogPrimitive.Close>
         )}
         <div className="p-6 overflow-y-auto max-h-[70vh]">{children}</div>
       </DialogContent>

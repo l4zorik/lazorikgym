@@ -1,0 +1,104 @@
+{
+  "name": "LazorikGym",
+  "short_name": "LazorikGym",
+  "description": "AI-powered fitness platforma pro chytrý trénink",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#030303",
+  "theme_color": "#ff6b35",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "cs",
+  "categories": ["fitness", "health", "sports"],
+  "icons": [
+    {
+      "src": "/icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Trénink",
+      "short_name": "Trénink",
+      "description": "Začít nový trénink",
+      "url": "/workout/new",
+      "icons": [{ "src": "/icons/workout.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Achievements",
+      "short_name": "Achievements",
+      "description": "Zobrazit vaše achievements",
+      "url": "/dashboard/achievements",
+      "icons": [{ "src": "/icons/achievements.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Jídelníčky",
+      "short_name": "Jídelníčky",
+      "description": "Zobrazit jídelníčky",
+      "url": "/dashboard/jidelnicky",
+      "icons": [{ "src": "/icons/meals.png", "sizes": "192x192" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/home.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Hlavní stránka"
+    },
+    {
+      "src": "/screenshots/dashboard.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Dashboard"
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}

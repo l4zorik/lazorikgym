@@ -1,4 +1,47 @@
-import { BodyPart, WorkoutPlan, MealPlan, TrainerTip, HallOfFameEntry, Meal } from "@/types";
+import { BodyPart, WorkoutPlan, MealPlan, TrainerTip, HallOfFameEntry, Meal, Achievement } from "@/types";
+
+// Video IDs for YouTube exercise tutorials (easily replaceable with actual URLs)
+const exerciseVideos: Record<string, string> = {
+  "bench-press": "VXyB0Cs7k3s",
+  "kliky": "IODxDxX7oi4",
+  "rozpazovani-s-jednoruckami": "FLqKAd8C8fU",
+  "tlaky-s-jednoruckami": "B-aVuyhvLHU",
+  "upazovani-lateral-raises": "3b0H0g8Fv4s",
+  "shyby-pull-ups": "eGo4IYlbE5g",
+  "pritahy-osy": "dVZs1MRqF74",
+  "stahovani-horni-kladky": "GvRvn9YFjW4",
+  "drep-squats": "YaXPRqUwItQ",
+  "mrtvy-tah": "1V0T5hRkv0U",
+  "leg-press": "IZxyC_1Owxw",
+  "vypady": "QOVaHwm-Q6U",
+  "bicepsovy-zdvih": "ykJmrZ5v0Oo",
+  "tricepsove-stlacovani": "6jVaGf0WbE8",
+  "kladivove-zdvihy": "vXtdbtZ0E0k",
+  "francouzsky-tlak": "4B6hLr2mc8Y",
+  "zkracovacky-crunches": "1fbU_MkV7NE",
+  "zvedani-nohou-ve-visu": "hX前半部1k0",
+  "russian-twists": "wkD8rjkodUI",
+  "bicycle-crunches": "1f8qoFFt0rM",
+  "plank-vzpor": "pSHjTRCQxIw",
+  "dead-bug": "4B0T3x0YJJA",
+  "bird-dog": "wiFNA3sqjCA",
+  "pallof-press": "VbsvNr1Qe3I",
+  "izometricke-tlaky-hlavou": "V2gG_7g0qZM",
+  "pritahy-brady-chin-tucks": "w4rT4S1DbCw",
+  "krouzeni-rameny": "M6A9cXW2vT8",
+  "face-pulls": "uYHr_4F5Gq8",
+  "arnoldovy-tlaky": "G3t0dXh2Q9k",
+};
+
+// Helper function to get YouTube embed URL
+function getVideoUrl(exerciseName: string): string | undefined {
+  const key = exerciseName.toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+  
+  const videoId = exerciseVideos[key];
+  return videoId ? `https://www.youtube.com/embed/${videoId}` : undefined;
+}
 
 // Body Parts Data
 export const bodyPartsData: BodyPart[] = [
@@ -8,9 +51,33 @@ export const bodyPartsData: BodyPart[] = [
     progress: 30,
     color: "#ff6b35",
     exercises: [
-      { id: "neck-1", name: "Izometrické tlaky hlavou", category: "Krční páteř", difficulty: "Začátečník", equipment: "Vlastní váha", description: "Tlačte hlavou proti ruce v různých směrech a držte 10 sekund." },
-      { id: "neck-2", name: "Přítahy brady (Chin Tucks)", category: "Krční páteř", difficulty: "Začátečník", equipment: "Vlastní váha", description: "Zatáhněte bradu dozadu, jako byste si dělali dvojitou bradu." },
-      { id: "neck-3", name: "Kroužení rameny", category: "Krční páteř", difficulty: "Začátečník", equipment: "Vlastní váha", description: "Pomalé kroužení rameny vpřed a vzad." },
+      { 
+        id: "neck-1", 
+        name: "Izometrické tlaky hlavou", 
+        category: "Krční páteř", 
+        difficulty: "Začátečník", 
+        equipment: "Vlastní váha", 
+        description: "Tlačte hlavou proti ruce v různých směrech a držte 10 sekund.",
+        videoUrl: getVideoUrl("Izometrické tlaky hlavou")
+      },
+      { 
+        id: "neck-2", 
+        name: "Přítahy brady (Chin Tucks)", 
+        category: "Krční páteř", 
+        difficulty: "Začátečník", 
+        equipment: "Vlastní váha", 
+        description: "Zatáhněte bradu dozadu, jako byste si dělali dvojitou bradu.",
+        videoUrl: getVideoUrl("Přítahy brady (Chin Tucks)")
+      },
+      { 
+        id: "neck-3", 
+        name: "Kroužení rameny", 
+        category: "Krční páteř", 
+        difficulty: "Začátečník", 
+        equipment: "Vlastní váha", 
+        description: "Pomalé kroužení rameny vpřed a vzad.",
+        videoUrl: getVideoUrl("Kroužení rameny")
+      },
     ],
   },
   {
@@ -19,10 +86,38 @@ export const bodyPartsData: BodyPart[] = [
     progress: 60,
     color: "#e53935",
     exercises: [
-      { id: "shoulders-1", name: "Tlaky s jednoručkami", category: "Ramena", difficulty: "Střední", equipment: "Jednoručky" },
-      { id: "shoulders-2", name: "Upažování (Lateral Raises)", category: "Ramena", difficulty: "Střední", equipment: "Jednoručky" },
-      { id: "shoulders-3", name: "Face Pulls", category: "Ramena", difficulty: "Začátečník", equipment: "Kladka" },
-      { id: "shoulders-4", name: "Arnoldovy tlaky", category: "Ramena", difficulty: "Pokročilý", equipment: "Jednoručky" },
+      { 
+        id: "shoulders-1", 
+        name: "Tlaky s jednoručkami", 
+        category: "Ramena", 
+        difficulty: "Střední", 
+        equipment: "Jednoručky",
+        videoUrl: getVideoUrl("Tlaky s jednoručkami")
+      },
+      { 
+        id: "shoulders-2", 
+        name: "Upažování (Lateral Raises)", 
+        category: "Ramena", 
+        difficulty: "Střední", 
+        equipment: "Jednoručky",
+        videoUrl: getVideoUrl("Upažování (Lateral Raises)")
+      },
+      { 
+        id: "shoulders-3", 
+        name: "Face Pulls", 
+        category: "Ramena", 
+        difficulty: "Začátečník", 
+        equipment: "Kladka",
+        videoUrl: getVideoUrl("Face Pulls")
+      },
+      { 
+        id: "shoulders-4", 
+        name: "Arnoldovy tlaky", 
+        category: "Ramena", 
+        difficulty: "Pokročilý", 
+        equipment: "Jednoručky",
+        videoUrl: getVideoUrl("Arnoldovy tlaky")
+      },
     ],
   },
   {
@@ -31,10 +126,38 @@ export const bodyPartsData: BodyPart[] = [
     progress: 50,
     color: "#ff8a5b",
     exercises: [
-      { id: "chest-1", name: "Bench Press", category: "Prsa", difficulty: "Pokročilý", equipment: "Velká činka" },
-      { id: "chest-2", name: "Kliky (Push-ups)", category: "Prsa", difficulty: "Začátečník", equipment: "Vlastní váha" },
-      { id: "chest-3", name: "Rozpažování s jednoručkami", category: "Prsa", difficulty: "Střední", equipment: "Jednoručky" },
-      { id: "chest-4", name: "Tlaky na šikmé lavici", category: "Prsa", difficulty: "Střední", equipment: "Velká činka" },
+      { 
+        id: "chest-1", 
+        name: "Bench Press", 
+        category: "Prsa", 
+        difficulty: "Pokročilý", 
+        equipment: "Velká činka",
+        videoUrl: getVideoUrl("Bench Press")
+      },
+      { 
+        id: "chest-2", 
+        name: "Kliky (Push-ups)", 
+        category: "Prsa", 
+        difficulty: "Začátečník", 
+        equipment: "Vlastní váha",
+        videoUrl: getVideoUrl("Kliky")
+      },
+      { 
+        id: "chest-3", 
+        name: "Rozpažování s jednoručkami", 
+        category: "Prsa", 
+        difficulty: "Střední", 
+        equipment: "Jednoručky",
+        videoUrl: getVideoUrl("Rozpažování s jednoručkami")
+      },
+      { 
+        id: "chest-4", 
+        name: "Tlaky na šikmé lavici", 
+        category: "Prsa", 
+        difficulty: "Střední", 
+        equipment: "Velká činka",
+        videoUrl: getVideoUrl("Tlaky na šikmé lavici")
+      },
     ],
   },
   {
@@ -43,10 +166,38 @@ export const bodyPartsData: BodyPart[] = [
     progress: 45,
     color: "#ff6b35",
     exercises: [
-      { id: "arms-1", name: "Bicepsový zdvih s velkou činkou", category: "Ruce", difficulty: "Střední", equipment: "Velká činka" },
-      { id: "arms-2", name: "Tricepsové stlačování kladky", category: "Ruce", difficulty: "Začátečník", equipment: "Kladka" },
-      { id: "arms-3", name: "Kladivové zdvihy", category: "Ruce", difficulty: "Začátečník", equipment: "Jednoručky" },
-      { id: "arms-4", name: "Francouzský tlak", category: "Ruce", difficulty: "Střední", equipment: "Jednoručky" },
+      { 
+        id: "arms-1", 
+        name: "Bicepsový zdvih s velkou činkou", 
+        category: "Ruce", 
+        difficulty: "Střední", 
+        equipment: "Velká činka",
+        videoUrl: getVideoUrl("Bicepsový zdvih")
+      },
+      { 
+        id: "arms-2", 
+        name: "Tricepsové stlačování kladky", 
+        category: "Ruce", 
+        difficulty: "Začátečník", 
+        equipment: "Kladka",
+        videoUrl: getVideoUrl("Tricepsové stlačování")
+      },
+      { 
+        id: "arms-3", 
+        name: "Kladivové zdvihy", 
+        category: "Ruce", 
+        difficulty: "Začátečník", 
+        equipment: "Jednoručky",
+        videoUrl: getVideoUrl("Kladivové zdvihy")
+      },
+      { 
+        id: "arms-4", 
+        name: "Francouzský tlak", 
+        category: "Ruce", 
+        difficulty: "Střední", 
+        equipment: "Jednoručky",
+        videoUrl: getVideoUrl("Francouzský tlak")
+      },
     ],
   },
   {
@@ -55,10 +206,38 @@ export const bodyPartsData: BodyPart[] = [
     progress: 20,
     color: "#e53935",
     exercises: [
-      { id: "abs-1", name: "Zkracovačky (Crunches)", category: "Břicho", difficulty: "Začátečník", equipment: "Vlastní váha" },
-      { id: "abs-2", name: "Zvedání nohou ve visu", category: "Břicho", difficulty: "Pokročilý", equipment: "Hrazda" },
-      { id: "abs-3", name: "Russian Twists", category: "Břicho", difficulty: "Střední", equipment: "Medicinbal" },
-      { id: "abs-4", name: "Bicycle Crunches", category: "Břicho", difficulty: "Střední", equipment: "Vlastní váha" },
+      { 
+        id: "abs-1", 
+        name: "Zkracovačky (Crunches)", 
+        category: "Břicho", 
+        difficulty: "Začátečník", 
+        equipment: "Vlastní váha",
+        videoUrl: getVideoUrl("Zkracovačky")
+      },
+      { 
+        id: "abs-2", 
+        name: "Zvedání nohou ve visu", 
+        category: "Břicho", 
+        difficulty: "Pokročilý", 
+        equipment: "Hrazda",
+        videoUrl: getVideoUrl("Zvedání nohou ve visu")
+      },
+      { 
+        id: "abs-3", 
+        name: "Russian Twists", 
+        category: "Břicho", 
+        difficulty: "Střední", 
+        equipment: "Medicinbal",
+        videoUrl: getVideoUrl("Russian Twists")
+      },
+      { 
+        id: "abs-4", 
+        name: "Bicycle Crunches", 
+        category: "Břicho", 
+        difficulty: "Střední", 
+        equipment: "Vlastní váha",
+        videoUrl: getVideoUrl("Bicycle Crunches")
+      },
     ],
   },
   {
@@ -67,10 +246,38 @@ export const bodyPartsData: BodyPart[] = [
     progress: 40,
     color: "#ff8a5b",
     exercises: [
-      { id: "core-1", name: "Plank (Vzpor)", category: "Core", difficulty: "Střední", equipment: "Vlastní váha" },
-      { id: "core-2", name: "Dead Bug", category: "Core", difficulty: "Začátečník", equipment: "Vlastní váha" },
-      { id: "core-3", name: "Bird Dog", category: "Core", difficulty: "Začátečník", equipment: "Vlastní váha" },
-      { id: "core-4", name: "Pallof Press", category: "Core", difficulty: "Střední", equipment: "Kladka" },
+      { 
+        id: "core-1", 
+        name: "Plank (Vzpor)", 
+        category: "Core", 
+        difficulty: "Střední", 
+        equipment: "Vlastní váha",
+        videoUrl: getVideoUrl("Plank")
+      },
+      { 
+        id: "core-2", 
+        name: "Dead Bug", 
+        category: "Core", 
+        difficulty: "Začátečník", 
+        equipment: "Vlastní váha",
+        videoUrl: getVideoUrl("Dead Bug")
+      },
+      { 
+        id: "core-3", 
+        name: "Bird Dog", 
+        category: "Core", 
+        difficulty: "Začátečník", 
+        equipment: "Vlastní váha",
+        videoUrl: getVideoUrl("Bird Dog")
+      },
+      { 
+        id: "core-4", 
+        name: "Pallof Press", 
+        category: "Core", 
+        difficulty: "Střední", 
+        equipment: "Kladka",
+        videoUrl: getVideoUrl("Pallof Press")
+      },
     ],
   },
   {
@@ -79,9 +286,30 @@ export const bodyPartsData: BodyPart[] = [
     progress: 55,
     color: "#e53935",
     exercises: [
-      { id: "back-1", name: "Shyby (Pull-ups)", category: "Záda", difficulty: "Pokročilý", equipment: "Hrazda" },
-      { id: "back-2", name: "Přítahy osy v předklonu", category: "Záda", difficulty: "Pokročilý", equipment: "Velká činka" },
-      { id: "back-3", name: "Stahování horní kladky", category: "Záda", difficulty: "Začátečník", equipment: "Kladka" },
+      { 
+        id: "back-1", 
+        name: "Shyby (Pull-ups)", 
+        category: "Záda", 
+        difficulty: "Pokročilý", 
+        equipment: "Hrazda",
+        videoUrl: getVideoUrl("Shyby")
+      },
+      { 
+        id: "back-2", 
+        name: "Přítahy osy v předklonu", 
+        category: "Záda", 
+        difficulty: "Pokročilý", 
+        equipment: "Velká činka",
+        videoUrl: getVideoUrl("Přítahy osy")
+      },
+      { 
+        id: "back-3", 
+        name: "Stahování horní kladky", 
+        category: "Záda", 
+        difficulty: "Začátečník", 
+        equipment: "Kladka",
+        videoUrl: getVideoUrl("Stahování horní kladky")
+      },
     ],
   },
   {
@@ -90,10 +318,38 @@ export const bodyPartsData: BodyPart[] = [
     progress: 65,
     color: "#ff6b35",
     exercises: [
-      { id: "legs-1", name: "Dřepy (Squats)", category: "Nohy", difficulty: "Střední", equipment: "Velká činka" },
-      { id: "legs-2", name: "Mrtvý tah", category: "Nohy", difficulty: "Pokročilý", equipment: "Velká činka" },
-      { id: "legs-3", name: "Leg Press", category: "Nohy", difficulty: "Střední", equipment: "Stroj" },
-      { id: "legs-4", name: "Výpady", category: "Nohy", difficulty: "Začátečník", equipment: "Jednoručky" },
+      { 
+        id: "legs-1", 
+        name: "Dřepy (Squats)", 
+        category: "Nohy", 
+        difficulty: "Střední", 
+        equipment: "Velká činka",
+        videoUrl: getVideoUrl("Dřepy")
+      },
+      { 
+        id: "legs-2", 
+        name: "Mrtvý tah", 
+        category: "Nohy", 
+        difficulty: "Pokročilý", 
+        equipment: "Velká činka",
+        videoUrl: getVideoUrl("Mrtvý tah")
+      },
+      { 
+        id: "legs-3", 
+        name: "Leg Press", 
+        category: "Nohy", 
+        difficulty: "Střední", 
+        equipment: "Stroj",
+        videoUrl: getVideoUrl("Leg Press")
+      },
+      { 
+        id: "legs-4", 
+        name: "Výpady", 
+        category: "Nohy", 
+        difficulty: "Začátečník", 
+        equipment: "Jednoručky",
+        videoUrl: getVideoUrl("Výpady")
+      },
     ],
   },
 ];
@@ -102,39 +358,69 @@ export const bodyPartsData: BodyPart[] = [
 export const workoutPlansData: WorkoutPlan[] = [
   {
     id: "push-pull-legs",
-    name: "Push/Pull/Legs",
-    description: "Klasický 6-denní split pro maximální hypertrofii. Ideální pro pokročilé sportovce.",
+    name: "Push/Pull/Legs Master",
+    description: "Kompletní 6-denní split navržený pro maximální objem a symetrii.",
     duration: "6 dní/týden",
     difficulty: "Pokročilý",
-    targetParts: ["Prsa", "Záda", "Nohy", "Ramena", "Ruce"],
+    targetParts: ["Hrudník", "Záda", "Nohy", "Ramena", "Ruce"],
+    tags: ["Objem", "Hypertrofie", "Pro"],
+    estimatedTime: "75 min",
+    estimatedCalories: 650,
+    splitType: "Push/Pull/Legs",
     exercises: [],
+    weeklySchedule: [
+      { day: "Pondělí", workout: "Push (Hrudník, Ramena, Triceps)", muscles: ["Prsa", "Ramena", "Triceps"] },
+      { day: "Úterý", workout: "Pull (Záda, Biceps)", muscles: ["Záda", "Biceps"] },
+      { day: "Středa", workout: "Legs (Nohy, Core)", muscles: ["Kvadraticepsy", "Hamstringy", "Lýtka"] },
+      { day: "Čtvrtek", workout: "Push B", muscles: ["Prsa", "Ramena", "Triceps"] },
+      { day: "Pátek", workout: "Pull B", muscles: ["Záda", "Biceps"] },
+      { day: "Sobota", workout: "Legs B", muscles: ["Nohy", "Břicho"] },
+      { day: "Neděle", workout: "Odpočinek", muscles: [], isRest: true },
+    ]
   },
   {
-    id: "full-body",
-    name: "Full Body",
-    description: "3x týdně celé tělo. Perfektní pro začátečníky nebo při časové tísni.",
-    duration: "3 dní/týden",
+    id: "full-body-expert",
+    name: "Full Body Foundation",
+    description: "Základní kámen silového tréninku. Efektivní a časově nenáročný.",
+    duration: "3 dny/týden",
     difficulty: "Začátečník",
     targetParts: ["Celé tělo"],
+    tags: ["Síla", "Základy", "Efektivita"],
+    estimatedTime: "50 min",
+    estimatedCalories: 450,
+    splitType: "Full Body",
     exercises: [],
+    weeklySchedule: [
+      { day: "Pondělí", workout: "Full Body A", muscles: ["Nohy", "Záda", "Prsa"] },
+      { day: "Úterý", workout: "Odpočinek", muscles: [], isRest: true },
+      { day: "Středa", workout: "Full Body B", muscles: ["Nohy", "Ramena", "Ruce"] },
+      { day: "Čtvrtek", workout: "Odpočinek", muscles: [], isRest: true },
+      { day: "Pátek", workout: "Full Body C", muscles: ["Celé tělo"] },
+      { day: "Sobota", workout: "Aktivní regenerace", muscles: ["Kardio"], isRest: true },
+      { day: "Neděle", workout: "Odpočinek", muscles: [], isRest: true },
+    ]
   },
   {
-    id: "upper-lower",
-    name: "Upper/Lower Split",
-    description: "Střídání horní a dolní části těla. Vyvážený přístup pro středně pokročilé.",
-    duration: "4 dní/týden",
+    id: "upper-lower-elite",
+    name: "Elite Upper/Lower",
+    description: "Moderní přístup ke zvyšování síly a svalové hmoty s optimální frekvencí.",
+    duration: "4 dny/týden",
     difficulty: "Střední",
     targetParts: ["Horní tělo", "Dolní tělo"],
+    tags: ["Síla", "Kondice", "Atletika"],
+    estimatedTime: "65 min",
+    estimatedCalories: 550,
+    splitType: "Upper/Lower",
     exercises: [],
-  },
-  {
-    id: "weak-points",
-    name: "Slabé Partie Focus",
-    description: "Personalizovaný plán zaměřený na vaše nejslabší partie podle analýzy.",
-    duration: "5 dní/týden",
-    difficulty: "Střední",
-    targetParts: ["Krční páteř", "Břicho", "Core"],
-    exercises: [],
+    weeklySchedule: [
+      { day: "Pondělí", workout: "Upper Power", muscles: ["Záda", "Prsa", "Ramena"] },
+      { day: "Úterý", workout: "Lower Power", muscles: ["Nohy", "Core"] },
+      { day: "Středa", workout: "Odpočinek", muscles: [], isRest: true },
+      { day: "Čtvrtek", workout: "Upper Hypertrophy", muscles: ["Prsa", "Záda", "Ruce"] },
+      { day: "Pátek", workout: "Lower Hypertrophy", muscles: ["Hamstringy", "Lýtka"] },
+      { day: "Sobota", workout: "Odpočinek", muscles: [], isRest: true },
+      { day: "Neděle", workout: "Odpočinek", muscles: [], isRest: true },
+    ]
   },
 ];
 

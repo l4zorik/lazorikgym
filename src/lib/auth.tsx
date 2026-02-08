@@ -9,6 +9,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<boolean>;
   register: (name: string, email: string, password: string) => Promise<boolean>;
+  updateProfile: (updates: Partial<User>) => Promise<boolean>;
   logout: () => void;
 }
 
@@ -21,6 +22,9 @@ const MOCK_USER: User = {
   email: "jan@lazorikgym.cz",
   avatar: undefined,
   fitnessLevel: "intermediate",
+  activityLevel: "moderately_active",
+  experience: "intermediate",
+  primaryGoal: "gain_muscle",
   goals: ["Nabrat svalovou hmotu", "Zlepšit výdrž"],
   createdAt: new Date(),
 };
@@ -81,6 +85,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return false;
   }, []);
 
+  const updateProfile = useCallback(async (updates: Partial<User>): Promise<boolean> => {
+    setIsLoading(true);
+    // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 800));
+    
+    setUser(prev => prev ? { ...prev, ...updates } : null);
+    setIsLoading(false);
+    return true;
+  }, []);
+
   const logout = useCallback(() => {
     setUser(null);
   }, []);
@@ -93,6 +107,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAuthenticated: !!user,
         login,
         register,
+        updateProfile,
         logout,
       }}
     >

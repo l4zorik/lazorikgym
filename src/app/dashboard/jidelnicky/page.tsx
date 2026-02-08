@@ -15,27 +15,31 @@ import {
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import { mealPlansData } from "@/lib/data";
+import { MobileNav } from "@/components/MobileNav";
+import { usePlan } from "@/hooks/usePlan";
 
-export default function Jidelnicky() {
-  const [activePlan, setActivePlan] = useState<string | null>("bulking");
+export default function JidelnickyPage() {
+  const { activeMealPlanId, activateMealPlan } = usePlan();
+  const [activePlan, setActivePlan] = useState<string | null>(activeMealPlanId || "bulking");
 
   const selectedPlan = mealPlansData.find((p) => p.id === activePlan);
+  const isActive = activeMealPlanId === activePlan;
 
   return (
-    <div className="min-h-screen bg-bg-primary text-text-primary">
+    <div className="min-h-screen bg-[#030303] text-white">
       {/* Header */}
-      <header className="p-6 border-b border-border bg-bg-secondary sticky top-0 z-10">
+      <header className="p-6 border-b border-[#2a2a2a] bg-[#0a0a0a] sticky top-0 z-10">
         <div className="max-w-4xl mx-auto flex items-center gap-4">
           <Link
             href="/dashboard"
-            className="p-2 rounded-lg hover:bg-bg-card transition-colors"
+            className="p-2 rounded-lg hover:bg-[#141414] transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-xl font-bold">Jidelnicky</h1>
-            <p className="text-sm text-text-muted">
-              Vyber si plan podle sveho cile
+            <h1 className="text-xl font-bold">Jídelníčky</h1>
+            <p className="text-sm text-gray-600">
+              Vyber si plán podle svého cíle
             </p>
           </div>
         </div>
@@ -50,8 +54,8 @@ export default function Jidelnicky() {
               onClick={() => setActivePlan(plan.id)}
               className={`flex-shrink-0 px-6 py-3 rounded-xl font-medium transition-all ${
                 activePlan === plan.id
-                  ? "gradient-bg text-white shadow-lg"
-                  : "bg-bg-card text-text-secondary border border-border hover:border-accent"
+                  ? "bg-gradient-to-r from-[#ff6b35] to-[#e53935] text-white shadow-lg"
+                  : "bg-[#141414] text-gray-400 border border-[#2a2a2a] hover:border-[#ff6b35]"
               }`}
             >
               {plan.name}
@@ -82,7 +86,7 @@ export default function Jidelnicky() {
                       : "Udrzeni"}
                   </span>
                   <h2 className="text-2xl font-bold">{selectedPlan.name}</h2>
-                  <p className="text-text-secondary mt-1">
+                  <p className="text-gray-400 mt-1">
                     {selectedPlan.description}
                   </p>
                 </div>
@@ -90,27 +94,27 @@ export default function Jidelnicky() {
 
               {/* Macros */}
               <div className="grid grid-cols-3 gap-4 mt-6">
-                <div className="p-4 rounded-xl bg-bg-secondary text-center">
+                <div className="p-4 rounded-xl bg-[#0a0a0a] text-center">
                   <Flame className="w-6 h-6 text-orange-400 mx-auto mb-2" />
                   <div className="text-2xl font-bold">{selectedPlan.totalCalories}</div>
-                  <div className="text-xs text-text-muted">kcal / den</div>
+                  <div className="text-xs text-gray-600">kcal / den</div>
                 </div>
-                <div className="p-4 rounded-xl bg-bg-secondary text-center">
+                <div className="p-4 rounded-xl bg-[#0a0a0a] text-center">
                   <Dumbbell className="w-6 h-6 text-red-400 mx-auto mb-2" />
                   <div className="text-2xl font-bold">{selectedPlan.totalProtein}g</div>
-                  <div className="text-xs text-text-muted">protein</div>
+                  <div className="text-xs text-gray-600">protein</div>
                 </div>
-                <div className="p-4 rounded-xl bg-bg-secondary text-center">
+                <div className="p-4 rounded-xl bg-[#0a0a0a] text-center">
                   <Leaf className="w-6 h-6 text-green-400 mx-auto mb-2" />
-                  <div className="text-2xl font-bold">Vyvazene</div>
-                  <div className="text-xs text-text-muted">makra</div>
+                  <div className="text-2xl font-bold">Vyvážené</div>
+                  <div className="text-xs text-gray-600">makra</div>
                 </div>
               </div>
             </Card>
 
             {/* Meals */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Denni jidla</h3>
+              <h3 className="text-lg font-semibold">Denní jídla</h3>
 
               {/* Breakfast */}
               <Card hover className="p-5">
@@ -120,15 +124,15 @@ export default function Jidelnicky() {
                       <span className="text-2xl">🌅</span>
                     </div>
                     <div>
-                      <p className="text-sm text-text-muted">Snidane</p>
+                      <p className="text-sm text-gray-600">Snídaně</p>
                       <h4 className="font-bold">{selectedPlan.meals.breakfast.name}</h4>
-                      <p className="text-sm text-text-secondary">
+                      <p className="text-sm text-gray-400">
                         {selectedPlan.meals.breakfast.calories} kcal •{" "}
                         {selectedPlan.meals.breakfast.protein}g protein
                       </p>
                     </div>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-text-muted" />
+                  <ChevronRight className="w-5 h-5 text-gray-600" />
                 </div>
               </Card>
 
@@ -140,15 +144,15 @@ export default function Jidelnicky() {
                       <span className="text-2xl">☀️</span>
                     </div>
                     <div>
-                      <p className="text-sm text-text-muted">Obed</p>
+                      <p className="text-sm text-gray-600">Oběd</p>
                       <h4 className="font-bold">{selectedPlan.meals.lunch.name}</h4>
-                      <p className="text-sm text-text-secondary">
+                      <p className="text-sm text-gray-400">
                         {selectedPlan.meals.lunch.calories} kcal •{" "}
                         {selectedPlan.meals.lunch.protein}g protein
                       </p>
                     </div>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-text-muted" />
+                  <ChevronRight className="w-5 h-5 text-gray-600" />
                 </div>
               </Card>
 
@@ -160,15 +164,15 @@ export default function Jidelnicky() {
                       <span className="text-2xl">🌙</span>
                     </div>
                     <div>
-                      <p className="text-sm text-text-muted">Vecere</p>
+                      <p className="text-sm text-gray-600">Večeře</p>
                       <h4 className="font-bold">{selectedPlan.meals.dinner.name}</h4>
-                      <p className="text-sm text-text-secondary">
+                      <p className="text-sm text-gray-400">
                         {selectedPlan.meals.dinner.calories} kcal •{" "}
                         {selectedPlan.meals.dinner.protein}g protein
                       </p>
                     </div>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-text-muted" />
+                  <ChevronRight className="w-5 h-5 text-gray-600" />
                 </div>
               </Card>
 
@@ -181,17 +185,17 @@ export default function Jidelnicky() {
                         <span className="text-2xl">🥗</span>
                       </div>
                       <div>
-                        <p className="text-sm text-text-muted">Svaciny</p>
+                        <p className="text-sm text-gray-600">Svačiny</p>
                         <h4 className="font-bold">
                           {selectedPlan.meals.snacks.map((s) => s.name).join(", ")}
                         </h4>
-                        <p className="text-sm text-text-secondary">
+                        <p className="text-sm text-gray-400">
                           {selectedPlan.meals.snacks.reduce((acc, s) => acc + s.calories, 0)} kcal •{" "}
                           {selectedPlan.meals.snacks.reduce((acc, s) => acc + s.protein, 0)}g protein
                         </p>
                       </div>
                     </div>
-                    <ChevronRight className="w-5 h-5 text-text-muted" />
+                    <ChevronRight className="w-5 h-5 text-gray-600" />
                   </div>
                 </Card>
               )}
@@ -199,14 +203,21 @@ export default function Jidelnicky() {
 
             {/* CTA */}
             <div className="pt-4">
-              <Button fullWidth size="lg">
+              <Button 
+                fullWidth 
+                size="lg" 
+                onClick={() => activateMealPlan(selectedPlan.id)}
+                disabled={isActive}
+                className={isActive ? "bg-[#10b981] opacity-100" : ""}
+              >
                 <Check className="w-5 h-5" />
-                Aktivovat tento plan
+                {isActive ? "Plán je aktivní" : "Aktivovat tento plán"}
               </Button>
             </div>
           </>
         )}
       </main>
+      <MobileNav />
     </div>
   );
 }
