@@ -1,6 +1,3 @@
-"use client";
-
-import { useState } from "react";
 import Link from "next/link";
 import {
   Dumbbell,
@@ -8,7 +5,6 @@ import {
   Utensils,
   Calendar,
   Users,
-  Trophy,
   ArrowRight,
   TrendingUp,
   Play,
@@ -20,11 +16,7 @@ import {
   Brain,
   Sparkles,
   ChevronRight,
-  Clock,
 } from "lucide-react";
-import BodyMap from "@/components/BodyMap";
-import BodyMapModal from "@/components/BodyMapModal";
-import { BodyPart } from "@/types";
 import {
   workoutPlansData,
   mealPlansData,
@@ -32,15 +24,48 @@ import {
 } from "@/lib/data";
 import Button from "@/components/ui/Button";
 
+const muscleAnalysis = {
+  left: [
+    { name: "Krční páteř", progress: 30, status: "weak" as const },
+    { name: "Ramena", progress: 60, status: "ok" as const },
+    { name: "Ruce", progress: 45, status: "ok" as const },
+    { name: "Nohy", progress: 65, status: "strong" as const },
+  ],
+  right: [
+    { name: "Prsa", progress: 50, status: "ok" as const },
+    { name: "Záda", progress: 55, status: "ok" as const },
+    { name: "Břicho", progress: 20, status: "weak" as const },
+    { name: "Core", progress: 40, status: "weak" as const },
+  ],
+};
+
+function MuscleCard({ muscle }: { muscle: { name: string; progress: number; status: "weak" | "ok" | "strong" } }) {
+  const isWeak = muscle.status === "weak";
+  const isStrong = muscle.status === "strong";
+  const color = isWeak ? "#ff6b35" : isStrong ? "#10b981" : "#6b7280";
+  const label = isWeak ? "Slabá partie" : isStrong ? "Silná" : "V normě";
+  const C = 97.4;
+  const dash = (C * muscle.progress) / 100;
+
+  return (
+    <div className={`flex items-center gap-3 p-3.5 rounded-xl bg-white/[0.02] border ${isWeak ? "border-[#ff6b35]/20" : "border-white/5"} hover:bg-white/[0.04] transition-all`}>
+      <div className="relative w-11 h-11 shrink-0">
+        <svg viewBox="0 0 36 36" className="w-11 h-11 -rotate-90">
+          <circle cx="18" cy="18" r="15.5" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="2.5" />
+          <circle cx="18" cy="18" r="15.5" fill="none" stroke={color} strokeWidth="2.5" strokeDasharray={`${dash} ${C}`} strokeLinecap="round" />
+        </svg>
+        <span className="absolute inset-0 flex items-center justify-center text-[11px] font-bold" style={{ color }}>{muscle.progress}</span>
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="font-semibold text-sm text-white leading-tight">{muscle.name}</p>
+        <p className="text-xs mt-0.5" style={{ color }}>{label}</p>
+      </div>
+      {isWeak && <div className="w-2 h-2 rounded-full bg-[#ff6b35] shrink-0 animate-pulse" />}
+    </div>
+  );
+}
+
 export default function LandingPage() {
-  const [selectedBodyPart, setSelectedBodyPart] = useState<BodyPart | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handlePartClick = (part: BodyPart) => {
-    setSelectedBodyPart(part);
-    setIsModalOpen(true);
-  };
-
   return (
     <main className="min-h-screen bg-[#030303] text-white overflow-x-hidden">
       {/* Navigation */}
@@ -408,46 +433,169 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Body Map Section */}
-      <section id="body-map" className="py-20 border-t border-white/5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left side - Text */}
-            <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-[#ff6b35]/10 border border-[#ff6b35]/20 mb-6">
-                <Target className="w-4 h-4 text-[#ff6b35]" />
-                <span className="text-sm font-medium text-[#ff6b35]">Interaktivní analýza</span>
-              </div>
+      {/* Body Analysis Section */}
+      <section id="body-map" className="py-24 border-t border-white/5 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#ff6b35]/[0.02] to-transparent pointer-events-none" />
 
-              <h2 className="text-3xl sm:text-4xl font-bold mb-6">
-                Zaměř se na <span className="text-[#ff6b35]">slabé partie</span>
-              </h2>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          {/* Header */}
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-[#ff6b35]/10 border border-[#ff6b35]/20 mb-6">
+              <Target className="w-4 h-4 text-[#ff6b35]" />
+              <span className="text-sm font-medium text-[#ff6b35]">AI Analýza těla</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+              Zaměř se na <span className="text-[#ff6b35]">slabé partie</span>
+            </h2>
+            <p className="text-gray-400 max-w-2xl mx-auto">
+              Interaktivní mapa těla odhalí tvé slabiny. AI analyzuje svalovou nerovnováhu
+              a vytvoří cílený plán pro každou skupinu.
+            </p>
+          </div>
 
-              <p className="text-gray-400 mb-8 leading-relaxed">
-                Klikni na svalovou skupinu a získej personalizovaný plán cviků.
-                AI ti doporučí nejefektivnější cviky pro rychlý pokrok.
-              </p>
+          {/* 3-Column Analysis Layout */}
+          <div className="grid grid-cols-2 lg:grid-cols-[1fr_280px_1fr] gap-4 lg:gap-8 items-start lg:items-center max-w-5xl mx-auto">
+            {/* Body Figure - full width mobile, center desktop */}
+            <div className="col-span-2 lg:col-span-1 lg:order-2 flex justify-center mb-6 lg:mb-0">
+              <div className="relative">
+                {/* Outer glow */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-72 bg-[#ff6b35]/[0.06] rounded-full blur-3xl pointer-events-none" />
 
-              <div className="space-y-4">
-                {[
-                  "Personalizované cviky pro každou partii",
-                  "Video návody s technikou",
-                  "Sledování pokroku v čase",
-                ].map((text, i) => (
-                  <div key={i} className="flex items-center gap-3 text-gray-300">
-                    <Check className="w-5 h-5 text-[#10b981]" />
-                    <span>{text}</span>
+                {/* Body container */}
+                <div className="relative bg-[#0a0a0a]/80 border border-white/[0.08] rounded-2xl p-6 sm:p-8">
+                  <svg viewBox="0 0 200 400" className="w-[180px] sm:w-[220px] h-auto relative z-10" aria-label="Mapa svalových skupin">
+                    {/* Subtle body outline */}
+                    <g opacity="0.04" stroke="white" strokeWidth="1" fill="none">
+                      <ellipse cx="100" cy="40" rx="27" ry="32" />
+                      <path d="M65 90 Q100 83 135 90 L135 142 Q100 152 65 142 Z" />
+                      <path d="M33 105 L23 182 L42 187 L57 115 Z" />
+                      <path d="M167 105 L177 182 L158 187 L143 115 Z" />
+                      <rect x="73" y="143" width="54" height="64" rx="10" />
+                      <path d="M73 212 L63 342 L87 347 L97 217 Z" />
+                      <path d="M127 212 L137 342 L113 347 L103 217 Z" />
+                    </g>
+
+                    {/* Head/Neck - 30% weak */}
+                    <g>
+                      <ellipse cx="100" cy="40" rx="25" ry="30" fill="#e53935" opacity="0.5">
+                        <animate attributeName="opacity" values="0.35;0.6;0.35" dur="3s" repeatCount="indefinite" />
+                      </ellipse>
+                      <rect x="90" y="65" width="20" height="20" rx="4" fill="#e53935" opacity="0.4" />
+                    </g>
+
+                    {/* Shoulders - 60% */}
+                    <g opacity="0.35">
+                      <ellipse cx="55" cy="100" rx="20" ry="15" fill="#6b7280" />
+                      <ellipse cx="145" cy="100" rx="20" ry="15" fill="#6b7280" />
+                    </g>
+
+                    {/* Chest - 50% */}
+                    <path d="M65 90 Q100 85 135 90 L135 140 Q100 150 65 140 Z" fill="#6b7280" opacity="0.3" />
+
+                    {/* Arms - 45% */}
+                    <g opacity="0.3">
+                      <path d="M35 105 L25 180 L40 185 L55 115 Z" fill="#6b7280" />
+                      <path d="M165 105 L175 180 L160 185 L145 115 Z" fill="#6b7280" />
+                    </g>
+
+                    {/* Abs - 20% weak */}
+                    <rect x="75" y="145" width="50" height="60" rx="8" fill="#ff6b35" opacity="0.55">
+                      <animate attributeName="opacity" values="0.35;0.65;0.35" dur="2.5s" repeatCount="indefinite" />
+                    </rect>
+
+                    {/* Pulse ring around abs */}
+                    <ellipse cx="100" cy="175" rx="30" ry="35" fill="none" stroke="#ff6b35" strokeWidth="0.5" opacity="0.15">
+                      <animate attributeName="rx" values="28;38;28" dur="3s" repeatCount="indefinite" />
+                      <animate attributeName="ry" values="33;43;33" dur="3s" repeatCount="indefinite" />
+                      <animate attributeName="opacity" values="0.15;0.03;0.15" dur="3s" repeatCount="indefinite" />
+                    </ellipse>
+
+                    {/* Back - 55% */}
+                    <g opacity="0.3">
+                      <rect x="60" y="100" width="8" height="50" rx="4" fill="#6b7280" />
+                      <rect x="132" y="100" width="8" height="50" rx="4" fill="#6b7280" />
+                    </g>
+
+                    {/* Legs - 65% strong */}
+                    <g opacity="0.4">
+                      <path d="M75 210 L65 340 L85 345 L95 215 Z" fill="#10b981" />
+                      <path d="M125 210 L135 340 L115 345 L105 215 Z" fill="#10b981" />
+                    </g>
+                  </svg>
+
+                  {/* Floating weak-part annotations */}
+                  <div className="absolute top-5 -right-3 sm:-right-12 px-2.5 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#ff6b35]/25 shadow-lg shadow-[#ff6b35]/5">
+                    <p className="text-[10px] font-bold text-[#ff6b35]">Krční páteř</p>
+                    <p className="text-[9px] text-gray-500">30% • Priorita</p>
                   </div>
-                ))}
+                  <div className="absolute bottom-[38%] -left-3 sm:-left-14 px-2.5 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#ff6b35]/25 shadow-lg shadow-[#ff6b35]/5">
+                    <p className="text-[10px] font-bold text-[#ff6b35]">Břicho</p>
+                    <p className="text-[9px] text-gray-500">20% • Priorita</p>
+                  </div>
+                  <div className="absolute bottom-[18%] -right-3 sm:-right-10 px-2.5 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#10b981]/25 shadow-lg shadow-[#10b981]/5">
+                    <p className="text-[10px] font-bold text-[#10b981]">Nohy</p>
+                    <p className="text-[9px] text-gray-500">65% • Silné</p>
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Right side - Body Map */}
-            <div className="relative">
-              <div className="bg-[#0a0a0a] border border-white/10 rounded-xl p-8">
-                <BodyMap onPartClick={handlePartClick} />
+            {/* Left Cards */}
+            <div className="space-y-3 lg:order-1">
+              {muscleAnalysis.left.map((m, i) => (
+                <MuscleCard key={i} muscle={m} />
+              ))}
+            </div>
+
+            {/* Right Cards */}
+            <div className="space-y-3 lg:order-3">
+              {muscleAnalysis.right.map((m, i) => (
+                <MuscleCard key={i} muscle={m} />
+              ))}
+            </div>
+          </div>
+
+          {/* Summary Stats Bar */}
+          <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-12 mt-16 py-6 rounded-xl bg-white/[0.02] border border-white/5 max-w-3xl mx-auto">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-[#3b82f6]/10 flex items-center justify-center">
+                <Target className="w-5 h-5 text-[#3b82f6]" />
+              </div>
+              <div>
+                <p className="text-xl font-bold">8</p>
+                <p className="text-xs text-gray-500">Svalových skupin</p>
               </div>
             </div>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-[#ff6b35]/10 flex items-center justify-center">
+                <TrendingUp className="w-5 h-5 text-[#ff6b35]" />
+              </div>
+              <div>
+                <p className="text-xl font-bold">3</p>
+                <p className="text-xs text-gray-500">Slabé partie</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-[#10b981]/10 flex items-center justify-center">
+                <Brain className="w-5 h-5 text-[#10b981]" />
+              </div>
+              <div>
+                <p className="text-xl font-bold text-[#10b981]">AI</p>
+                <p className="text-xs text-gray-500">Plán na míru</p>
+              </div>
+            </div>
+          </div>
+
+          {/* CTA */}
+          <div className="text-center mt-12">
+            <Link
+              href="/register"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-[#ff6b35] to-[#e53935] text-white font-semibold text-lg hover:shadow-lg hover:shadow-[#ff6b35]/25 transition-all"
+            >
+              Analyzovat mé tělo
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+            <p className="text-gray-600 text-sm mt-3">Zdarma • Bez kreditky • Okamžitá analýza</p>
           </div>
         </div>
       </section>
@@ -679,12 +827,6 @@ export default function LandingPage() {
         </div>
       </footer>
 
-      {/* Modal */}
-      <BodyMapModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        bodyPart={selectedBodyPart}
-      />
     </main>
   );
 }
