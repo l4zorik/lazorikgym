@@ -33,6 +33,7 @@ function NewWorkoutContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const focusPartId = searchParams.get("focus");
+  const exerciseIds = searchParams.get("exercises");
 
   const [isGenerating, setIsGenerating] = useState(false);
   const [workoutPlan, setWorkoutPlan] = useState<WorkoutItem[]>([]);
@@ -106,6 +107,35 @@ function NewWorkoutContent() {
     setHistory([...history, newSession]);
     router.push("/dashboard?completed=true");
   };
+
+  // Load specific exercises from query param (from scheduled workouts)
+  useEffect(() => {
+    if (exerciseIds && workoutPlan.length === 0) {
+      const ids = exerciseIds.split(",");
+      const newPlan: WorkoutItem[] = [];
+      for (const id of ids) {
+        for (const part of bodyPartsData) {
+          const ex = part.exercises.find((e) => e.id === id);
+          if (ex) {
+            newPlan.push({
+              id: Math.random().toString(36).substr(2, 9),
+              exerciseId: ex.id,
+              exercise: ex.name,
+              part: part.name,
+              sets: 3,
+              reps: "10-12",
+              weight: "",
+            });
+            break;
+          }
+        }
+      }
+      if (newPlan.length > 0) {
+        setWorkoutPlan(newPlan);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [exerciseIds]);
 
   // Auto-generate plan if focus part is provided via URL
   useEffect(() => {

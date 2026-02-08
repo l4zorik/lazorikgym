@@ -36,9 +36,17 @@ import {
 import { useAuth } from "@/lib/auth";
 import { bodyPartsData, getWeakBodyParts } from "@/lib/data";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { useDailyTracker } from "@/hooks/useDailyTracker";
 import BodyMapModal from "@/components/BodyMapModal";
 import BodyPartGrid from "@/components/BodyPartGrid";
 import AIAssistantCard from "@/components/AIAssistantCard";
+import TodayOverview from "@/components/dashboard/TodayOverview";
+import TodayWorkouts from "@/components/dashboard/TodayWorkouts";
+import QuickPlannerButton from "@/components/dashboard/QuickPlannerButton";
+import DailyTrackerSection from "@/components/dashboard/DailyTrackerSection";
+import WorkoutPlannerModal from "@/components/dashboard/WorkoutPlannerModal";
+import FoodLogModal from "@/components/dashboard/FoodLogModal";
+import EquipmentModal from "@/components/dashboard/EquipmentModal";
 import { BodyPart, WorkoutSession, ScheduledWorkout } from "@/types";
 import { MobileNav } from "@/components/MobileNav";
 import { usePlan } from "@/hooks/usePlan";
@@ -71,37 +79,107 @@ export default function DashboardPage() {
   const [showAllUpcoming, setShowAllUpcoming] = useState(false);
   const [today, setToday] = useState<Date | null>(null);
   const { activeWorkoutPlan, activeWorkoutPlanId, currentWeekNumber } = usePlan();
+  const [showPlanner, setShowPlanner] = useState(false);
+  const [showFoodModal, setShowFoodModal] = useState(false);
+  const [showEquipment, setShowEquipment] = useState(false);
+  const [userEquipment, setUserEquipment] = useLocalStorage<string[]>("user_equipment", ["Vlastní váha"]);
+  const tracker = useDailyTracker();
 
-  // Initialize date and seed tomorrow's workout (only after hydration)
+  // Initialize date and always seed tomorrow's workouts if missing
   useEffect(() => {
     if (!isHydrated) return;
     const now = new Date();
     setToday(now);
 
-    // Seed "Push Day" for tomorrow if it's missing and no workouts exist
     const tomorrow = new Date(now);
     tomorrow.setDate(now.getDate() + 1);
     const tomorrowStr = tomorrow.toISOString().split("T")[0];
 
     const hasTomorrowWorkout = scheduledWorkouts.some(w => w.date === tomorrowStr);
-    // Only seed if there are no scheduled workouts at all (fresh start)
-    if (!hasTomorrowWorkout && scheduledWorkouts.length === 0) {
-      const seedWorkout: ScheduledWorkout = {
-        id: "seed-push-day",
-        date: tomorrowStr,
-        title: "Pondělní Push Day",
-        type: "strength",
-        duration: 60,
-        completed: false,
-        aiGenerated: true
-      };
-      setScheduledWorkouts([...scheduledWorkouts, seedWorkout]);
+    if (!hasTomorrowWorkout) {
+      const weak = getWeakBodyParts();
+      // Pick 2-3 weak parts for seed, or fallback to first parts
+      const seedParts = weak.length > 0 ? weak.slice(0, 2) : bodyPartsData.slice(0, 2);
+      const seedExercises = seedParts.flatMap(p => p.exercises.slice(0, 2).map(e => e.name));
+      const seedTitle = seedParts.map(p => p.name).join(" + ");
+
+      const seedWorkouts: ScheduledWorkout[] = [
+        {
+          id: `seed-${tomorrowStr}-1`,
+          date: tomorrowStr,
+          title: seedTitle,
+          type: "strength",
+          duration: 60,
+          completed: false,
+          exercises: seedExercises,
+          aiGenerated: true,
+        },
+      ];
+
+      // Add a second light workout if there are enough weak parts
+      if (weak.length > 2) {
+        const extraParts = weak.slice(2, 4);
+        seedWorkouts.push({
+          id: `seed-${tomorrowStr}-2`,
+          date: tomorrowStr,
+          title: extraParts.map(p => p.name).join(" + ") + " (Doplňkový)",
+          type: "strength",
+          duration: 30,
+          completed: false,
+          exercises: extraParts.flatMap(p => p.exercises.slice(0, 1).map(e => e.name)),
+          aiGenerated: true,
+        });
+      }
+
+      setScheduledWorkouts((prev) => [...prev, ...seedWorkouts]);
     }
   }, [isHydrated]);
 
   const handlePartClick = (part: BodyPart) => {
     setSelectedBodyPart(part);
     setIsModalOpen(true);
+  };
+
+  const handleStartWorkout = (workout: ScheduledWorkout) => {
+    if (!workout.exercises || workout.exercises.length === 0) {
+      router.push("/workout/new");
+      return;
+    }
+    // Resolve exercise names to IDs via bodyPartsData
+    const exerciseIds: string[] = [];
+    for (const exName of workout.exercises) {
+      for (const part of bodyPartsData) {
+        const found = part.exercises.find(
+          (e) => e.name.toLowerCase() === exName.toLowerCase()
+        );
+        if (found) {
+          exerciseIds.push(found.id);
+          break;
+        }
+        // Fallback: if exName matches a body part name, take first 2 exercises
+        if (part.name.toLowerCase() === exName.toLowerCase()) {
+          part.exercises.slice(0, 2).forEach((e) => exerciseIds.push(e.id));
+          break;
+        }
+      }
+    }
+    if (exerciseIds.length > 0) {
+      router.push(`/workout/new?exercises=${exerciseIds.join(",")}`);
+    } else {
+      router.push("/workout/new");
+    }
+  };
+
+  const handleCreateWorkout = (workout: ScheduledWorkout) => {
+    setScheduledWorkouts((prev) => [...prev, workout]);
+  };
+
+  const handleDeleteWorkout = (id: string) => {
+    setScheduledWorkouts((prev) => prev.filter((w) => w.id !== id));
+  };
+
+  const handleEditWorkout = (updated: ScheduledWorkout) => {
+    setScheduledWorkouts((prev) => prev.map((w) => (w.id === updated.id ? updated : w)));
   };
 
   const navItems = [
@@ -373,6 +451,51 @@ export default function DashboardPage() {
                 {currentGoal.insight}
               </p>
             </motion.div>
+          </div>
+
+          {/* Today Overview Stats */}
+          <div className="mb-10">
+            <TodayOverview
+              calories={tracker.todayCalories}
+              waterPercentage={tracker.waterPercentage}
+              sleepHours={tracker.todaySleep?.hours ?? null}
+              mood={tracker.todayMoodEntry?.mood ?? null}
+              todayWorkoutsCount={todaysWorkouts.length}
+              isHydrated={tracker.isHydrated}
+            />
+          </div>
+
+          {/* Today's Workouts - Click to Start */}
+          <div className="mb-10">
+            <TodayWorkouts
+              scheduledWorkouts={scheduledWorkouts}
+              onStartWorkout={handleStartWorkout}
+              onOpenPlanner={() => setShowPlanner(true)}
+              onDeleteWorkout={handleDeleteWorkout}
+              onEditWorkout={handleEditWorkout}
+            />
+          </div>
+
+          {/* Quick Planner Button */}
+          <div className="mb-10">
+            <QuickPlannerButton onClick={() => setShowPlanner(true)} />
+          </div>
+
+          {/* Daily Tracker Section */}
+          <div className="mb-16">
+            <DailyTrackerSection
+              todayFood={tracker.todayFood}
+              todayCalories={tracker.todayCalories}
+              todayWater={tracker.todayWater}
+              waterPercentage={tracker.waterPercentage}
+              dailyWaterGoal={tracker.dailyWaterGoal}
+              todaySleep={tracker.todaySleep}
+              todayMoodEntry={tracker.todayMoodEntry}
+              onOpenFoodModal={() => setShowFoodModal(true)}
+              onAddWater={tracker.addWater}
+              onSetSleep={tracker.setSleep}
+              onSetMood={tracker.setMood}
+            />
           </div>
 
           {/* Dynamic Stats Row */}
@@ -970,11 +1093,29 @@ export default function DashboardPage() {
 
       <MobileNav />
 
-      {/* Modal */}
+      {/* Modals */}
       <BodyMapModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         bodyPart={selectedBodyPart}
+      />
+      <WorkoutPlannerModal
+        isOpen={showPlanner}
+        onClose={() => setShowPlanner(false)}
+        onCreateWorkout={handleCreateWorkout}
+        userEquipment={userEquipment}
+        onOpenEquipment={() => setShowEquipment(true)}
+      />
+      <FoodLogModal
+        isOpen={showFoodModal}
+        onClose={() => setShowFoodModal(false)}
+        onAdd={tracker.addFoodEntry}
+      />
+      <EquipmentModal
+        isOpen={showEquipment}
+        onClose={() => setShowEquipment(false)}
+        selectedEquipment={userEquipment}
+        onSave={setUserEquipment}
       />
     </div>
   );

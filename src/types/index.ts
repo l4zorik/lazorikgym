@@ -181,6 +181,40 @@ export interface WorkoutSession {
   items: WorkoutSessionItem[];
 }
 
+// Daily Tracking
+export interface FoodLogEntry {
+  id: string;
+  date: string;
+  mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack';
+  name: string;
+  calories: number;
+  protein?: number;
+  carbs?: number;
+  fat?: number;
+  time: string;
+}
+
+export interface SleepLogEntry {
+  id: string;
+  date: string;
+  hours: number;
+  quality: 'poor' | 'fair' | 'good' | 'excellent';
+}
+
+export interface DailyMoodEntry {
+  id: string;
+  date: string;
+  mood: number; // 1-5
+  energy: number; // 1-5
+}
+
+export interface WaterEntry {
+  id: string;
+  date: string;
+  amount: number;
+  time: string;
+}
+
 // Scheduled Workouts (Calendar)
 export interface ScheduledWorkout {
   id: string;
