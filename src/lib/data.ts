@@ -110,13 +110,21 @@ export const bodyPartsData: BodyPart[] = [
         equipment: "Kladka",
         videoUrl: getVideoUrl("Face Pulls")
       },
-      { 
-        id: "shoulders-4", 
-        name: "Arnoldovy tlaky", 
-        category: "Ramena", 
-        difficulty: "Pokročilý", 
+      {
+        id: "shoulders-4",
+        name: "Arnoldovy tlaky",
+        category: "Ramena",
+        difficulty: "Pokročilý",
         equipment: "Jednoručky",
         videoUrl: getVideoUrl("Arnoldovy tlaky")
+      },
+      {
+        id: "shoulders-5",
+        name: "Kliky na ramena (Pike Push-ups)",
+        category: "Ramena",
+        difficulty: "Střední",
+        equipment: "Vlastní váha",
+        description: "Kliky v pozici obráceného V. Více zapojují deltové svaly díky odlišné dráze pohybu."
       },
     ],
   },
@@ -150,13 +158,37 @@ export const bodyPartsData: BodyPart[] = [
         equipment: "Jednoručky",
         videoUrl: getVideoUrl("Rozpažování s jednoručkami")
       },
-      { 
-        id: "chest-4", 
-        name: "Tlaky na šikmé lavici", 
-        category: "Prsa", 
-        difficulty: "Střední", 
+      {
+        id: "chest-4",
+        name: "Tlaky na šikmé lavici",
+        category: "Prsa",
+        difficulty: "Střední",
         equipment: "Velká činka",
         videoUrl: getVideoUrl("Tlaky na šikmé lavici")
+      },
+      {
+        id: "chest-5",
+        name: "Kliky na široko",
+        category: "Prsa",
+        difficulty: "Začátečník",
+        equipment: "Vlastní váha",
+        description: "Pánské kliky se širším postavením rukou pro větší zapojení prsních svalů."
+      },
+      {
+        id: "chest-6",
+        name: "Úzké kliky (Diamond Push-ups)",
+        category: "Prsa",
+        difficulty: "Střední",
+        equipment: "Vlastní váha",
+        description: "Kliky s úzkým postavením rukou. Více zapojují triceps a vnitřní část prsou."
+      },
+      {
+        id: "chest-7",
+        name: "Dipy na bradlech",
+        category: "Prsa",
+        difficulty: "Pokročilý",
+        equipment: "Hrazda",
+        description: "Dipy s předklonem trupu pro maximální zapojení spodní části prsou."
       },
     ],
   },
@@ -190,13 +222,29 @@ export const bodyPartsData: BodyPart[] = [
         equipment: "Jednoručky",
         videoUrl: getVideoUrl("Kladivové zdvihy")
       },
-      { 
-        id: "arms-4", 
-        name: "Francouzský tlak", 
-        category: "Ruce", 
-        difficulty: "Střední", 
+      {
+        id: "arms-4",
+        name: "Francouzský tlak",
+        category: "Ruce",
+        difficulty: "Střední",
         equipment: "Jednoručky",
         videoUrl: getVideoUrl("Francouzský tlak")
+      },
+      {
+        id: "arms-5",
+        name: "Reverzní kliky na triceps",
+        category: "Ruce",
+        difficulty: "Začátečník",
+        equipment: "Vlastní váha",
+        description: "Kliky s oporou rukou o lavičku/židli za zády. Izolují triceps."
+      },
+      {
+        id: "arms-6",
+        name: "Bicepsové zdvihy s expandérem",
+        category: "Ruce",
+        difficulty: "Začátečník",
+        equipment: "Expandéry",
+        description: "Bicepsový zdvih s odporovou gumou. Ideální pro domácí trénink."
       },
     ],
   },
@@ -230,13 +278,29 @@ export const bodyPartsData: BodyPart[] = [
         equipment: "Medicinbal",
         videoUrl: getVideoUrl("Russian Twists")
       },
-      { 
-        id: "abs-4", 
-        name: "Bicycle Crunches", 
-        category: "Břicho", 
-        difficulty: "Střední", 
+      {
+        id: "abs-4",
+        name: "Bicycle Crunches",
+        category: "Břicho",
+        difficulty: "Střední",
         equipment: "Vlastní váha",
         videoUrl: getVideoUrl("Bicycle Crunches")
+      },
+      {
+        id: "abs-5",
+        name: "Leg Raises (Zvedání nohou vleže)",
+        category: "Břicho",
+        difficulty: "Střední",
+        equipment: "Vlastní váha",
+        description: "Zvedání natažených nohou vleže na zádech. Cílí na spodní část břicha."
+      },
+      {
+        id: "abs-6",
+        name: "V-Sit",
+        category: "Břicho",
+        difficulty: "Pokročilý",
+        equipment: "Vlastní váha",
+        description: "Současné zvedání trupu i nohou do tvaru V. Komplexní cvik na celé břicho."
       },
     ],
   },
@@ -270,13 +334,29 @@ export const bodyPartsData: BodyPart[] = [
         equipment: "Vlastní váha",
         videoUrl: getVideoUrl("Bird Dog")
       },
-      { 
-        id: "core-4", 
-        name: "Pallof Press", 
-        category: "Core", 
-        difficulty: "Střední", 
+      {
+        id: "core-4",
+        name: "Pallof Press",
+        category: "Core",
+        difficulty: "Střední",
         equipment: "Kladka",
         videoUrl: getVideoUrl("Pallof Press")
+      },
+      {
+        id: "core-5",
+        name: "Boční plank",
+        category: "Core",
+        difficulty: "Střední",
+        equipment: "Vlastní váha",
+        description: "Plank na boku. Posiluje šikmé břišní svaly a stabilizátory trupu."
+      },
+      {
+        id: "core-6",
+        name: "Rotační plank",
+        category: "Core",
+        difficulty: "Pokročilý",
+        equipment: "Vlastní váha",
+        description: "Plank s rotací trupu. Zapojí břicho, záda i ramena díky kruhovému pohybu."
       },
     ],
   },
@@ -302,13 +382,29 @@ export const bodyPartsData: BodyPart[] = [
         equipment: "Velká činka",
         videoUrl: getVideoUrl("Přítahy osy")
       },
-      { 
-        id: "back-3", 
-        name: "Stahování horní kladky", 
-        category: "Záda", 
-        difficulty: "Začátečník", 
+      {
+        id: "back-3",
+        name: "Stahování horní kladky",
+        category: "Záda",
+        difficulty: "Začátečník",
         equipment: "Kladka",
         videoUrl: getVideoUrl("Stahování horní kladky")
+      },
+      {
+        id: "back-4",
+        name: "Superman",
+        category: "Záda",
+        difficulty: "Začátečník",
+        equipment: "Vlastní váha",
+        description: "Vleže na břiše zvedejte současně ruce a nohy. Posiluje vzpřimovače páteře."
+      },
+      {
+        id: "back-5",
+        name: "Reverse Snow Angel",
+        category: "Záda",
+        difficulty: "Začátečník",
+        equipment: "Vlastní váha",
+        description: "Obrácený sněhový andělíček vleže na břiše. Posiluje vzpřimovače páteře a deltové svaly."
       },
     ],
   },
@@ -342,13 +438,45 @@ export const bodyPartsData: BodyPart[] = [
         equipment: "Stroj",
         videoUrl: getVideoUrl("Leg Press")
       },
-      { 
-        id: "legs-4", 
-        name: "Výpady", 
-        category: "Nohy", 
-        difficulty: "Začátečník", 
+      {
+        id: "legs-4",
+        name: "Výpady",
+        category: "Nohy",
+        difficulty: "Začátečník",
         equipment: "Jednoručky",
         videoUrl: getVideoUrl("Výpady")
+      },
+      {
+        id: "legs-5",
+        name: "Dřepy s vlastní váhou",
+        category: "Nohy",
+        difficulty: "Začátečník",
+        equipment: "Vlastní váha",
+        description: "Základní dřep bez zátěže. Procvičí stehna, hýždě a core. Lze ztížit výdrží ve spodní pozici."
+      },
+      {
+        id: "legs-6",
+        name: "Bulharské dřepy",
+        category: "Nohy",
+        difficulty: "Střední",
+        equipment: "Vlastní váha",
+        description: "Jednorázový dřep se zadní nohou na lavičce. Efektivnější než klasický dřep díky izolaci každé nohy."
+      },
+      {
+        id: "legs-7",
+        name: "Hip Thrusty",
+        category: "Nohy",
+        difficulty: "Střední",
+        equipment: "Vlastní váha",
+        description: "Zdvih pánve s oporou zad o lavičku. Nejúčinnější cvik na hýžďové svaly."
+      },
+      {
+        id: "legs-8",
+        name: "Výstupy na vyvýšenou podložku",
+        category: "Nohy",
+        difficulty: "Začátečník",
+        equipment: "Vlastní váha",
+        description: "Step-upy na lavičku nebo bednu. Posiluje stehna a hýždě unilaterálně."
       },
     ],
   },

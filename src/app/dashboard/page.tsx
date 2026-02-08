@@ -46,10 +46,15 @@ import QuickPlannerButton from "@/components/dashboard/QuickPlannerButton";
 import DailyTrackerSection from "@/components/dashboard/DailyTrackerSection";
 import WorkoutPlannerModal from "@/components/dashboard/WorkoutPlannerModal";
 import FoodLogModal from "@/components/dashboard/FoodLogModal";
+import NutrientGoalsModal from "@/components/dashboard/NutrientGoalsModal";
 import EquipmentModal from "@/components/dashboard/EquipmentModal";
+import WorkoutHoverPreview from "@/components/dashboard/WorkoutHoverPreview";
+import GoalsSection from "@/components/dashboard/GoalsSection";
+import AddGoalModal from "@/components/dashboard/AddGoalModal";
 import { BodyPart, WorkoutSession, ScheduledWorkout } from "@/types";
 import { MobileNav } from "@/components/MobileNav";
 import { usePlan } from "@/hooks/usePlan";
+import { useGoals } from "@/hooks/useGoals";
 
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -82,8 +87,12 @@ export default function DashboardPage() {
   const [showPlanner, setShowPlanner] = useState(false);
   const [showFoodModal, setShowFoodModal] = useState(false);
   const [showEquipment, setShowEquipment] = useState(false);
+  const [showGoalModal, setShowGoalModal] = useState(false);
+  const [showNutrientGoalsModal, setShowNutrientGoalsModal] = useState(false);
+  const [hoveredWorkoutId, setHoveredWorkoutId] = useState<string | null>(null);
   const [userEquipment, setUserEquipment] = useLocalStorage<string[]>("user_equipment", ["Vlastní váha"]);
   const tracker = useDailyTracker();
+  const goals = useGoals();
 
   // Initialize date and always seed tomorrow's workouts if missing
   useEffect(() => {
@@ -98,9 +107,19 @@ export default function DashboardPage() {
     const hasTomorrowWorkout = scheduledWorkouts.some(w => w.date === tomorrowStr);
     if (!hasTomorrowWorkout) {
       const weak = getWeakBodyParts();
-      // Pick 2-3 weak parts for seed, or fallback to first parts
-      const seedParts = weak.length > 0 ? weak.slice(0, 2) : bodyPartsData.slice(0, 2);
-      const seedExercises = seedParts.flatMap(p => p.exercises.slice(0, 2).map(e => e.name));
+      // Prioritize goal body parts
+      const goalParts = goals.activeGoals
+        .map(g => bodyPartsData.find(p => p.id === g.bodyPartId))
+        .filter(Boolean) as typeof bodyPartsData;
+      const nonGoalWeak = weak.filter(w => !goalParts.some(g => g.id === w.id));
+      // Goal parts get 3 exercises, others get 2
+      const seedParts = goalParts.length > 0
+        ? goalParts
+        : (weak.length > 0 ? weak.slice(0, 2) : bodyPartsData.slice(0, 2));
+      const seedExercises = seedParts.flatMap(p => {
+        const isGoalPart = goalParts.some(g => g.id === p.id);
+        return p.exercises.slice(0, isGoalPart ? 3 : 2).map(e => e.name);
+      });
       const seedTitle = seedParts.map(p => p.name).join(" + ");
 
       const seedWorkouts: ScheduledWorkout[] = [
@@ -476,6 +495,18 @@ export default function DashboardPage() {
             />
           </div>
 
+          {/* Goals Section */}
+          <div className="mb-10">
+            <GoalsSection
+              goals={goals.activeGoals}
+              canAddGoal={goals.canAddGoal}
+              onAddGoal={() => setShowGoalModal(true)}
+              onRemoveGoal={goals.removeGoal}
+              onStartGoalWorkout={handleStartWorkout}
+              onRateGoal={goals.rateGoal}
+            />
+          </div>
+
           {/* Quick Planner Button */}
           <div className="mb-10">
             <QuickPlannerButton onClick={() => setShowPlanner(true)} />
@@ -486,12 +517,16 @@ export default function DashboardPage() {
             <DailyTrackerSection
               todayFood={tracker.todayFood}
               todayCalories={tracker.todayCalories}
+              todayNutrients={tracker.todayNutrients}
+              nutrientGoals={tracker.nutrientGoals}
               todayWater={tracker.todayWater}
               waterPercentage={tracker.waterPercentage}
               dailyWaterGoal={tracker.dailyWaterGoal}
               todaySleep={tracker.todaySleep}
               todayMoodEntry={tracker.todayMoodEntry}
               onOpenFoodModal={() => setShowFoodModal(true)}
+              onOpenGoalsModal={() => setShowNutrientGoalsModal(true)}
+              onRemoveFoodEntry={tracker.removeFoodEntry}
               onAddWater={tracker.addWater}
               onSetSleep={tracker.setSleep}
               onSetMood={tracker.setMood}
@@ -965,6 +1000,7 @@ export default function DashboardPage() {
                         const workoutDate = new Date(workout.date);
                         const isToday = today ? workoutDate.toDateString() === today.toDateString() : false;
                         const isTomorrow = today ? new Date(today.getTime() + 86400000).toDateString() === workoutDate.toDateString() : false;
+                        const isHovered = hoveredWorkoutId === workout.id;
 
                         return (
                           <motion.div
@@ -973,10 +1009,16 @@ export default function DashboardPage() {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
                             transition={{ delay: i * 0.05 }}
-                            className="group"
+                            className="relative"
+                            onMouseEnter={() => setHoveredWorkoutId(workout.id)}
+                            onMouseLeave={() => setHoveredWorkoutId(null)}
                           >
                             <Link href="/dashboard/calendar">
-                              <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/5 hover:border-white/10 transition-all">
+                              <div className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${
+                                isHovered
+                                  ? "bg-white/[0.06] border-white/15"
+                                  : "bg-white/[0.02] hover:bg-white/[0.05] border-white/5 hover:border-white/10"
+                              }`}>
                                 {/* Date badge */}
                                 <div className="flex flex-col items-center justify-center w-10 h-10 rounded-lg bg-white/5 flex-shrink-0">
                                   <span className="text-[10px] text-gray-500 uppercase">
@@ -1000,7 +1042,7 @@ export default function DashboardPage() {
                                 </div>
 
                                 {/* Type icon */}
-                                <div 
+                                <div
                                   className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
                                   style={{ backgroundColor: `${typeInfo?.color}15` }}
                                 >
@@ -1008,6 +1050,13 @@ export default function DashboardPage() {
                                 </div>
                               </div>
                             </Link>
+
+                            {/* Hover Preview */}
+                            <AnimatePresence>
+                              {isHovered && (
+                                <WorkoutHoverPreview workout={workout} />
+                              )}
+                            </AnimatePresence>
                           </motion.div>
                         );
                       })
@@ -1116,6 +1165,18 @@ export default function DashboardPage() {
         onClose={() => setShowEquipment(false)}
         selectedEquipment={userEquipment}
         onSave={setUserEquipment}
+      />
+      <AddGoalModal
+        isOpen={showGoalModal}
+        onClose={() => setShowGoalModal(false)}
+        onCreateGoal={goals.addGoal}
+        existingGoalPartIds={goals.existingGoalPartIds}
+      />
+      <NutrientGoalsModal
+        isOpen={showNutrientGoalsModal}
+        onClose={() => setShowNutrientGoalsModal(false)}
+        currentGoals={tracker.nutrientGoals}
+        onSave={tracker.updateNutrientGoals}
       />
     </div>
   );

@@ -143,6 +143,39 @@ export interface HallOfFameEntry {
   date: string;
 }
 
+// Goal Plans - Pre-made plans for specific body parts
+export interface BodyPartPlan {
+  id: string;
+  bodyPartId: string;
+  name: string;
+  description: string;
+  difficulty: 'Začátečník' | 'Střední' | 'Pokročilý';
+  durationWeeks: number;
+  frequencyPerWeek: number;
+  exercises: string[];
+  rating: number;
+  ratingCount: number;
+  tags: string[];
+  estimatedMinutes: number;
+  weeklyProgression: string[];
+}
+
+// Active user goal
+export interface BodyPartGoal {
+  id: string;
+  bodyPartId: string;
+  planId: string;
+  startProgress: number;
+  targetProgress: number;
+  createdAt: string;
+  status: 'active' | 'completed' | 'abandoned';
+  completedWorkouts: number;
+  totalWorkoutsNeeded: number;
+  userRating?: number;
+  userNote?: string;
+  weekNumber: number;
+}
+
 // Navigation
 export interface NavItem {
   label: string;
@@ -191,8 +224,22 @@ export interface FoodLogEntry {
   protein?: number;
   carbs?: number;
   fat?: number;
+  fiber?: number;   // gramy
+  sugar?: number;   // gramy
+  sodium?: number;  // miligramy
   time: string;
 }
+
+export interface NutrientGoals {
+  calories: number;  // kcal
+  protein: number;   // g
+  carbs: number;     // g
+  fat: number;       // g
+  fiber: number;     // g
+  sugar: number;     // g
+  sodium: number;    // mg
+}
+export type NutrientKey = keyof NutrientGoals;
 
 export interface SleepLogEntry {
   id: string;

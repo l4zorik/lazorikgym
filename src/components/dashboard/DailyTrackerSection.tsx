@@ -1,15 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Droplets, Moon, Smile, Utensils, Zap } from "lucide-react";
-import { FoodLogEntry, SleepLogEntry, DailyMoodEntry } from "@/types";
-
-const mealTypeLabels: Record<FoodLogEntry["mealType"], string> = {
-  breakfast: "Snídaně",
-  lunch: "Oběd",
-  dinner: "Večeře",
-  snack: "Svačina",
-};
+import { Droplets, Moon, Smile } from "lucide-react";
+import { FoodLogEntry, SleepLogEntry, DailyMoodEntry, NutrientGoals } from "@/types";
+import NutritionPanel from "./NutritionPanel";
 
 const sleepQualityLabels: Record<SleepLogEntry["quality"], { label: string; color: string }> = {
   poor: { label: "Špatná", color: "#ef4444" },
@@ -24,12 +18,16 @@ const energyIcons = ["🔋", "⚡", "💪", "🔥", "⭐"];
 interface DailyTrackerSectionProps {
   todayFood: FoodLogEntry[];
   todayCalories: number;
+  todayNutrients: NutrientGoals;
+  nutrientGoals: NutrientGoals;
   todayWater: number;
   waterPercentage: number;
   dailyWaterGoal: number;
   todaySleep: SleepLogEntry | null;
   todayMoodEntry: DailyMoodEntry | null;
   onOpenFoodModal: () => void;
+  onOpenGoalsModal: () => void;
+  onRemoveFoodEntry: (id: string) => void;
   onAddWater: (amount: number) => void;
   onSetSleep: (hours: number, quality: SleepLogEntry["quality"]) => void;
   onSetMood: (mood: number, energy: number) => void;
@@ -38,12 +36,16 @@ interface DailyTrackerSectionProps {
 export default function DailyTrackerSection({
   todayFood,
   todayCalories,
+  todayNutrients,
+  nutrientGoals,
   todayWater,
   waterPercentage,
   dailyWaterGoal,
   todaySleep,
   todayMoodEntry,
   onOpenFoodModal,
+  onOpenGoalsModal,
+  onRemoveFoodEntry,
   onAddWater,
   onSetSleep,
   onSetMood,
@@ -59,13 +61,6 @@ export default function DailyTrackerSection({
     }
   };
 
-  // Group food by meal type
-  const foodByMeal = todayFood.reduce((acc, entry) => {
-    if (!acc[entry.mealType]) acc[entry.mealType] = [];
-    acc[entry.mealType].push(entry);
-    return acc;
-  }, {} as Record<string, FoodLogEntry[]>);
-
   const waterQuickAdd = [250, 500, 750];
 
   // SVG circle for water progress
@@ -78,53 +73,16 @@ export default function DailyTrackerSection({
       <h3 className="text-lg font-bold mb-6">Denní přehled</h3>
 
       <div className="grid md:grid-cols-2 gap-6">
-        {/* Food Section */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Utensils className="w-4 h-4 text-emerald-400" />
-              <span className="text-sm font-semibold">Jídlo</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="text-xs text-gray-500">
-                {todayCalories > 0 ? `${todayCalories} kcal` : "Žádné záznamy"}
-              </span>
-              <button
-                onClick={onOpenFoodModal}
-                className="w-7 h-7 rounded-lg bg-emerald-500/20 flex items-center justify-center hover:bg-emerald-500/30 transition-colors"
-              >
-                <Plus className="w-3.5 h-3.5 text-emerald-400" />
-              </button>
-            </div>
-          </div>
-
-          {todayFood.length > 0 ? (
-            <div className="space-y-2 max-h-36 overflow-y-auto">
-              {(Object.entries(foodByMeal) as [FoodLogEntry["mealType"], FoodLogEntry[]][]).map(
-                ([mealType, entries]) => (
-                  <div key={mealType} className="p-3 rounded-xl bg-white/[0.03] border border-white/5">
-                    <p className="text-[10px] text-gray-500 uppercase font-semibold mb-1.5">
-                      {mealTypeLabels[mealType]}
-                    </p>
-                    {entries.map((entry) => (
-                      <div key={entry.id} className="flex items-center justify-between text-sm">
-                        <span className="text-gray-300 truncate">{entry.name}</span>
-                        <span className="text-xs text-gray-500 flex-shrink-0 ml-2">{entry.calories} kcal</span>
-                      </div>
-                    ))}
-                  </div>
-                )
-              )}
-            </div>
-          ) : (
-            <button
-              onClick={onOpenFoodModal}
-              className="w-full p-4 rounded-xl border border-dashed border-white/10 text-gray-500 text-sm hover:border-emerald-500/30 hover:text-emerald-400 transition-all flex items-center justify-center gap-2"
-            >
-              <Plus className="w-4 h-4" />
-              Přidat jídlo
-            </button>
-          )}
+        {/* Nutrition Panel - replaces old Food Section */}
+        <div className="md:row-span-2">
+          <NutritionPanel
+            todayFood={todayFood}
+            todayNutrients={todayNutrients}
+            nutrientGoals={nutrientGoals}
+            onOpenFoodModal={onOpenFoodModal}
+            onOpenGoalsModal={onOpenGoalsModal}
+            onRemoveFoodEntry={onRemoveFoodEntry}
+          />
         </div>
 
         {/* Water Section */}

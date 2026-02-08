@@ -25,6 +25,9 @@ export default function FoodLogModal({ isOpen, onClose, onAdd }: FoodLogModalPro
   const [protein, setProtein] = useState("");
   const [carbs, setCarbs] = useState("");
   const [fat, setFat] = useState("");
+  const [fiber, setFiber] = useState("");
+  const [sugar, setSugar] = useState("");
+  const [sodium, setSodium] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,6 +40,9 @@ export default function FoodLogModal({ isOpen, onClose, onAdd }: FoodLogModalPro
       protein: protein ? parseInt(protein) : undefined,
       carbs: carbs ? parseInt(carbs) : undefined,
       fat: fat ? parseInt(fat) : undefined,
+      fiber: fiber ? parseInt(fiber) : undefined,
+      sugar: sugar ? parseInt(sugar) : undefined,
+      sodium: sodium ? parseInt(sodium) : undefined,
     });
 
     setName("");
@@ -44,6 +50,9 @@ export default function FoodLogModal({ isOpen, onClose, onAdd }: FoodLogModalPro
     setProtein("");
     setCarbs("");
     setFat("");
+    setFiber("");
+    setSugar("");
+    setSodium("");
     onClose();
   };
 
@@ -161,6 +170,48 @@ export default function FoodLogModal({ isOpen, onClose, onAdd }: FoodLogModalPro
                       min="0"
                     />
                     <p className="text-[10px] text-gray-600 text-center mt-1">g tuky</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Extra nutrients - optional 3-col grid */}
+              <div>
+                <label className="text-xs text-gray-500 uppercase font-semibold mb-1.5 block">
+                  Dal&#x161;&#xED; nutrienty (voliteln&#xE9;)
+                </label>
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <input
+                      type="number"
+                      value={fiber}
+                      onChange={(e) => setFiber(e.target.value)}
+                      placeholder="Vl&#xE1;knina"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-center focus:outline-none focus:border-[#ff6b35] transition-colors"
+                      min="0"
+                    />
+                    <p className="text-[10px] text-gray-600 text-center mt-1">g vl&#xE1;knina</p>
+                  </div>
+                  <div>
+                    <input
+                      type="number"
+                      value={sugar}
+                      onChange={(e) => setSugar(e.target.value)}
+                      placeholder="Cukr"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-center focus:outline-none focus:border-[#ff6b35] transition-colors"
+                      min="0"
+                    />
+                    <p className="text-[10px] text-gray-600 text-center mt-1">g cukr</p>
+                  </div>
+                  <div>
+                    <input
+                      type="number"
+                      value={sodium}
+                      onChange={(e) => setSodium(e.target.value)}
+                      placeholder="Sod&#xED;k"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-center focus:outline-none focus:border-[#ff6b35] transition-colors"
+                      min="0"
+                    />
+                    <p className="text-[10px] text-gray-600 text-center mt-1">mg sod&#xED;k</p>
                   </div>
                 </div>
               </div>

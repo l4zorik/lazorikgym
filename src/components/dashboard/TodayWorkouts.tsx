@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import { Play, Check, Calendar, Clock, Dumbbell, Target, Flame, Plus, Pencil, Trash2, X, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ScheduledWorkout } from "@/types";
+import { bodyPartsData } from "@/lib/data";
 import Link from "next/link";
 
 type LucideIcon = React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
@@ -23,6 +24,34 @@ const typeLabels: Record<string, string> = {
   rest: "Odpočinek",
   hiit: "HIIT",
 };
+
+const bodyPartEmoji: Record<string, string> = {
+  "Krční páteř": "🦴",
+  "Ramena": "🤸",
+  "Prsa": "🏋️",
+  "Ruce": "💪",
+  "Břicho": "🔥",
+  "Core": "🎯",
+  "Záda": "🔙",
+  "Nohy": "🦵",
+};
+
+function resolveExercise(exName: string) {
+  for (const part of bodyPartsData) {
+    const found = part.exercises.find(
+      (e) => e.name.toLowerCase() === exName.toLowerCase()
+    );
+    if (found) {
+      return {
+        name: found.name,
+        bodyPart: part.name,
+        emoji: bodyPartEmoji[part.name] || "💪",
+        color: part.color,
+      };
+    }
+  }
+  return { name: exName, bodyPart: "—", emoji: "💪", color: "#666" };
+}
 
 interface TodayWorkoutsProps {
   scheduledWorkouts: ScheduledWorkout[];
@@ -158,10 +187,24 @@ export default function TodayWorkouts({
                 <span>{typeLabels[workout.type] || workout.type}</span>
               </div>
               {workout.exercises && workout.exercises.length > 0 && (
-                <p className="text-xs text-gray-600 mt-2 truncate">
-                  {workout.exercises.slice(0, 3).join(", ")}
-                  {workout.exercises.length > 3 && ` +${workout.exercises.length - 3}`}
-                </p>
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  {workout.exercises.map((exName, idx) => {
+                    const ex = resolveExercise(exName);
+                    return (
+                      <span
+                        key={idx}
+                        className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-medium"
+                        style={{
+                          backgroundColor: `${ex.color}12`,
+                          color: ex.color,
+                        }}
+                      >
+                        <span>{ex.emoji}</span>
+                        {ex.name}
+                      </span>
+                    );
+                  })}
+                </div>
               )}
             </div>
             <div className="flex items-center gap-1.5 flex-shrink-0">
