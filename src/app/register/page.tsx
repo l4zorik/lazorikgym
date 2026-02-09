@@ -5,10 +5,12 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Mail, Lock, User, Dumbbell, ArrowRight, Check, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/lib/auth";
+import { useLoginStreak } from "@/hooks/useLoginStreak";
 
 export default function RegisterPage() {
   const router = useRouter();
   const { register, isLoading } = useAuth();
+  const { recordLogin } = useLoginStreak();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -37,6 +39,7 @@ export default function RegisterPage() {
 
     const success = await register(name, email, password);
     if (success) {
+      recordLogin();
       router.push("/dashboard");
     } else {
       setError("Registrace se nezdařila. Zkuste to znovu.");

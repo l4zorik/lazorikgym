@@ -62,7 +62,9 @@ import PenaltyDashboardWidget from "@/components/penalty/PenaltyDashboardWidget"
 import LevelBadge from "@/components/penalty/LevelBadge";
 import DebtCounter from "@/components/penalty/DebtCounter";
 import QuestBoard from "@/components/quest/QuestBoard";
+import LoginStreakBanner from "@/components/dashboard/LoginStreakBanner";
 import { useQuests } from "@/hooks/useQuests";
+import { useLoginStreak } from "@/hooks/useLoginStreak";
 
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -103,6 +105,12 @@ export default function DashboardPage() {
   const goals = useGoals();
   const { runPenaltyCheck, currentStreak } = useWorkoutPostProcess();
   const questSystem = useQuests();
+  const { recordLogin } = useLoginStreak();
+
+  // Record login streak on dashboard load
+  useEffect(() => {
+    recordLogin();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Run penalty check on dashboard load
   useEffect(() => {
@@ -460,6 +468,9 @@ export default function DashboardPage() {
 
       <main className="pb-24 lg:pb-12">
         <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '2rem' }}>
+
+          {/* 0. Login Streak + Motivační citát */}
+          <LoginStreakBanner />
 
           {/* 1. Mise (Quest Board) */}
           <QuestBoard

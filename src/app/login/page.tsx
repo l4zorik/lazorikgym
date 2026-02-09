@@ -5,10 +5,12 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Mail, Lock, Dumbbell, ArrowRight, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/lib/auth";
+import { useLoginStreak } from "@/hooks/useLoginStreak";
 
 export default function LoginPage() {
   const router = useRouter();
   const { login, isLoading } = useAuth();
+  const { recordLogin } = useLoginStreak();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -25,6 +27,7 @@ export default function LoginPage() {
 
     const success = await login(email, password);
     if (success) {
+      recordLogin();
       router.push("/dashboard");
     } else {
       setError("Nesprávné přihlašovací údaje");
