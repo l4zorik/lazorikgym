@@ -268,7 +268,7 @@ export default function CalendarPage() {
 
   if (!mounted || !currentDate || !calendarData) {
     return (
-      <div className="min-h-screen bg-[#030303] text-white flex items-center justify-center">
+      <div className="min-h-screen bg-[var(--bg-primary)] text-white flex items-center justify-center">
         <div className="animate-pulse flex flex-col items-center">
           <div className="w-12 h-12 rounded-xl bg-white/10 mb-4"></div>
           <div className="text-gray-500">Načítání kalendáře...</div>
@@ -280,9 +280,9 @@ export default function CalendarPage() {
   const { year, month, daysInMonth, startingDay } = calendarData;
 
   return (
-    <div className="min-h-screen bg-[#030303] text-white">
+    <div className="min-h-screen bg-[var(--bg-primary)] text-white">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-[#030303]/95 backdrop-blur-xl border-b border-white/10">
+      <header className="sticky top-0 z-50 bg-[var(--bg-primary)]/95 backdrop-blur-xl border-b border-white/10">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -1001,7 +1001,7 @@ function AddWorkoutModal({
         initial={{ scale: 0.9, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.9, opacity: 0, y: 20 }}
-        className="bg-[#0a0a0a] border border-white/10 rounded-3xl max-w-lg w-full max-h-[90vh] overflow-hidden"
+        className="bg-[var(--bg-secondary)] border border-white/10 rounded-3xl max-w-lg w-full max-h-[90vh] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -1342,7 +1342,7 @@ function WorkoutDetailModal({
         initial={{ scale: 0.9, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.9, opacity: 0, y: 20 }}
-        className="bg-[#0a0a0a] border border-white/10 rounded-3xl max-w-md w-full max-h-[90vh] overflow-hidden"
+        className="bg-[var(--bg-secondary)] border border-white/10 rounded-3xl max-w-md w-full max-h-[90vh] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header with gradient */}

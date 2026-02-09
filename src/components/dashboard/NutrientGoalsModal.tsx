@@ -50,7 +50,7 @@ export default function NutrientGoalsModal({
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
-            className="relative w-full max-w-md bg-[#0a0a0a] border border-white/10 rounded-3xl p-6 shadow-2xl"
+            className="relative w-full max-w-md bg-[var(--bg-secondary)] border border-white/10 rounded-3xl p-6 shadow-2xl"
           >
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold">Denn\u00ED c\u00EDle</h2>

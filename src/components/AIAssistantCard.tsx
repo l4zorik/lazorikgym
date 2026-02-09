@@ -297,7 +297,7 @@ export default function AIAssistantCard({ weakBodyParts }: AIAssistantCardProps)
             onBlur={() => setIsFocused(false)}
             placeholder="Zeptej se AI trenéra..."
             disabled={isLoading}
-            className="relative flex-1 px-4 py-3.5 rounded-xl bg-[#141414] border border-[#2a2a2a] text-white placeholder-gray-500 text-sm focus:outline-none focus:border-[#ff6b35] focus:shadow-lg focus:shadow-[#ff6b35]/10 transition-all duration-300 disabled:opacity-50"
+            className="relative flex-1 px-4 py-3.5 rounded-xl bg-[var(--bg-card)] border border-[var(--border-color)] text-white placeholder-gray-500 text-sm focus:outline-none focus:border-[#ff6b35] focus:shadow-lg focus:shadow-[#ff6b35]/10 transition-all duration-300 disabled:opacity-50"
           />
           <button
             type="submit"

@@ -67,9 +67,9 @@ function MuscleCard({ muscle }: { muscle: { name: string; progress: number; stat
 
 export default function LandingPage() {
   return (
-    <main className="min-h-screen bg-[#030303] text-white overflow-x-hidden">
+    <main className="min-h-screen bg-[var(--bg-primary)] text-white overflow-x-hidden">
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-[#030303]/80 backdrop-blur-xl">
+      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-[var(--bg-primary)]/80 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link href="/" className="flex items-center gap-2">
@@ -161,7 +161,7 @@ export default function LandingPage() {
 
             {/* Right side - Calendar Showcase */}
             <div className="relative">
-              <div className="relative bg-[#0a0a0a] border border-white/10 rounded-xl overflow-hidden shadow-2xl">
+              <div className="relative bg-[var(--bg-secondary)] border border-white/10 rounded-xl overflow-hidden shadow-2xl">
                 <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-md bg-gradient-to-br from-[#ff6b35] to-[#e53935] flex items-center justify-center">
@@ -204,7 +204,7 @@ export default function LandingPage() {
                 </div>
               </div>
               
-              <div className="absolute -top-4 -right-4 p-3 rounded-lg bg-[#0a0a0a] border border-white/10 shadow-xl">
+              <div className="absolute -top-4 -right-4 p-3 rounded-lg bg-[var(--bg-secondary)] border border-white/10 shadow-xl">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-md bg-emerald-500/10 flex items-center justify-center">
                     <Check className="w-4 h-4 text-emerald-500" />
@@ -309,7 +309,7 @@ export default function LandingPage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left side - Large Calendar Preview */}
             <div className="order-2 lg:order-1">
-              <div className="bg-[#0a0a0a] border border-white/10 rounded-xl overflow-hidden">
+              <div className="bg-[var(--bg-secondary)] border border-white/10 rounded-xl overflow-hidden">
                 {/* Calendar Header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
                   <div className="flex items-center gap-4">
@@ -462,7 +462,7 @@ export default function LandingPage() {
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-72 bg-[#ff6b35]/[0.06] rounded-full blur-3xl pointer-events-none" />
 
                 {/* Body container */}
-                <div className="relative bg-[#0a0a0a]/80 border border-white/[0.08] rounded-2xl p-6 sm:p-8">
+                <div className="relative bg-[var(--bg-secondary)]/80 border border-white/[0.08] rounded-2xl p-6 sm:p-8">
                   <svg viewBox="0 0 200 400" className="w-[180px] sm:w-[220px] h-auto relative z-10" aria-label="Mapa svalových skupin">
                     {/* Subtle body outline */}
                     <g opacity="0.04" stroke="white" strokeWidth="1" fill="none">
@@ -524,15 +524,15 @@ export default function LandingPage() {
                   </svg>
 
                   {/* Floating weak-part annotations */}
-                  <div className="absolute top-5 -right-3 sm:-right-12 px-2.5 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#ff6b35]/25 shadow-lg shadow-[#ff6b35]/5">
+                  <div className="absolute top-5 -right-3 sm:-right-12 px-2.5 py-1.5 rounded-lg bg-[var(--bg-secondary)] border border-[#ff6b35]/25 shadow-lg shadow-[#ff6b35]/5">
                     <p className="text-[10px] font-bold text-[#ff6b35]">Krční páteř</p>
                     <p className="text-[9px] text-gray-500">30% • Priorita</p>
                   </div>
-                  <div className="absolute bottom-[38%] -left-3 sm:-left-14 px-2.5 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#ff6b35]/25 shadow-lg shadow-[#ff6b35]/5">
+                  <div className="absolute bottom-[38%] -left-3 sm:-left-14 px-2.5 py-1.5 rounded-lg bg-[var(--bg-secondary)] border border-[#ff6b35]/25 shadow-lg shadow-[#ff6b35]/5">
                     <p className="text-[10px] font-bold text-[#ff6b35]">Břicho</p>
                     <p className="text-[9px] text-gray-500">20% • Priorita</p>
                   </div>
-                  <div className="absolute bottom-[18%] -right-3 sm:-right-10 px-2.5 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#10b981]/25 shadow-lg shadow-[#10b981]/5">
+                  <div className="absolute bottom-[18%] -right-3 sm:-right-10 px-2.5 py-1.5 rounded-lg bg-[var(--bg-secondary)] border border-[#10b981]/25 shadow-lg shadow-[#10b981]/5">
                     <p className="text-[10px] font-bold text-[#10b981]">Nohy</p>
                     <p className="text-[9px] text-gray-500">65% • Silné</p>
                   </div>

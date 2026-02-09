@@ -26,13 +26,13 @@ export default function JidelnickyPage() {
   const isActive = activeMealPlanId === activePlan;
 
   return (
-    <div className="min-h-screen bg-[#030303] text-white">
+    <div className="min-h-screen bg-[var(--bg-primary)] text-white">
       {/* Header */}
-      <header className="p-6 border-b border-[#2a2a2a] bg-[#0a0a0a] sticky top-0 z-10">
+      <header className="p-6 border-b border-[var(--border-color)] bg-[var(--bg-secondary)] sticky top-0 z-10">
         <div className="max-w-4xl mx-auto flex items-center gap-4">
           <Link
             href="/dashboard"
-            className="p-2 rounded-lg hover:bg-[#141414] transition-colors"
+            className="p-2 rounded-lg hover:bg-[var(--bg-card)] transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
@@ -55,7 +55,7 @@ export default function JidelnickyPage() {
               className={`flex-shrink-0 px-6 py-3 rounded-xl font-medium transition-all ${
                 activePlan === plan.id
                   ? "bg-gradient-to-r from-[#ff6b35] to-[#e53935] text-white shadow-lg"
-                  : "bg-[#141414] text-gray-400 border border-[#2a2a2a] hover:border-[#ff6b35]"
+                  : "bg-[var(--bg-card)] text-gray-400 border border-[var(--border-color)] hover:border-[#ff6b35]"
               }`}
             >
               {plan.name}
@@ -94,17 +94,17 @@ export default function JidelnickyPage() {
 
               {/* Macros */}
               <div className="grid grid-cols-3 gap-4 mt-6">
-                <div className="p-4 rounded-xl bg-[#0a0a0a] text-center">
+                <div className="p-4 rounded-xl bg-[var(--bg-secondary)] text-center">
                   <Flame className="w-6 h-6 text-orange-400 mx-auto mb-2" />
                   <div className="text-2xl font-bold">{selectedPlan.totalCalories}</div>
                   <div className="text-xs text-gray-600">kcal / den</div>
                 </div>
-                <div className="p-4 rounded-xl bg-[#0a0a0a] text-center">
+                <div className="p-4 rounded-xl bg-[var(--bg-secondary)] text-center">
                   <Dumbbell className="w-6 h-6 text-red-400 mx-auto mb-2" />
                   <div className="text-2xl font-bold">{selectedPlan.totalProtein}g</div>
                   <div className="text-xs text-gray-600">protein</div>
                 </div>
-                <div className="p-4 rounded-xl bg-[#0a0a0a] text-center">
+                <div className="p-4 rounded-xl bg-[var(--bg-secondary)] text-center">
                   <Leaf className="w-6 h-6 text-green-400 mx-auto mb-2" />
                   <div className="text-2xl font-bold">Vyvážené</div>
                   <div className="text-xs text-gray-600">makra</div>

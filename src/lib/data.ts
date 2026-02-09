@@ -126,6 +126,30 @@ export const bodyPartsData: BodyPart[] = [
         equipment: "Vlastní váha",
         description: "Kliky v pozici obráceného V. Více zapojují deltové svaly díky odlišné dráze pohybu."
       },
+      {
+        id: "shoulders-6",
+        name: "Y-T-W Raises vleže",
+        category: "Ramena",
+        difficulty: "Začátečník",
+        equipment: "Vlastní váha",
+        description: "Vleže na břiše zvedejte ruce do tvaru Y, T a W. Posiluje zadní deltoidy a rotátorovou manžetu."
+      },
+      {
+        id: "shoulders-7",
+        name: "Stojka u zdi (Wall Handstand Hold)",
+        category: "Ramena",
+        difficulty: "Pokročilý",
+        equipment: "Vlastní váha",
+        description: "Stojka na rukou s oporou nohou o zeď. Extrémní zátěž pro ramena a stabilizátory."
+      },
+      {
+        id: "shoulders-8",
+        name: "Upažování s expandérem",
+        category: "Ramena",
+        difficulty: "Začátečník",
+        equipment: "Expandéry",
+        description: "Lateral raises s odporovou gumou. Plynulý odpor ideální pro domácí trénink ramen."
+      },
     ],
   },
   {
@@ -190,6 +214,38 @@ export const bodyPartsData: BodyPart[] = [
         equipment: "Hrazda",
         description: "Dipy s předklonem trupu pro maximální zapojení spodní části prsou."
       },
+      {
+        id: "chest-8",
+        name: "Kliky se zvýšenýma nohama",
+        category: "Prsa",
+        difficulty: "Střední",
+        equipment: "Vlastní váha",
+        description: "Kliky s nohama na židli nebo lavičce. Více zapojují horní část prsou a přední deltoidy."
+      },
+      {
+        id: "chest-9",
+        name: "Archer Push-ups",
+        category: "Prsa",
+        difficulty: "Pokročilý",
+        equipment: "Vlastní váha",
+        description: "Kliky s jednou rukou do strany. Jednostranná zátěž simuluje bench press s vlastní váhou."
+      },
+      {
+        id: "chest-10",
+        name: "Plyometrické kliky",
+        category: "Prsa",
+        difficulty: "Pokročilý",
+        equipment: "Vlastní váha",
+        description: "Explozivní kliky s odrazem rukou od země. Budují výbušnou sílu hrudníku a tricepsů."
+      },
+      {
+        id: "chest-11",
+        name: "Kliky s expandérem",
+        category: "Prsa",
+        difficulty: "Střední",
+        equipment: "Expandéry",
+        description: "Kliky s expandérem přes záda. Přidávají progresivní odpor v horní fázi pohybu."
+      },
     ],
   },
   {
@@ -245,6 +301,38 @@ export const bodyPartsData: BodyPart[] = [
         difficulty: "Začátečník",
         equipment: "Expandéry",
         description: "Bicepsový zdvih s odporovou gumou. Ideální pro domácí trénink."
+      },
+      {
+        id: "arms-7",
+        name: "Commando Pull-ups / Izometrické drží",
+        category: "Ruce",
+        difficulty: "Střední",
+        equipment: "Vlastní váha",
+        description: "Izometrický bicepsový zdvih s vlastní váhou — držte se za hranu stolu v pozici zdvihu."
+      },
+      {
+        id: "arms-8",
+        name: "Tricepsové kliky na židli",
+        category: "Ruce",
+        difficulty: "Střední",
+        equipment: "Vlastní váha",
+        description: "Hlubší verze reverzních kliků na židli s nohama na druhé židli pro maximální rozsah pohybu."
+      },
+      {
+        id: "arms-9",
+        name: "Tricepsové stlačování s expandérem",
+        category: "Ruce",
+        difficulty: "Začátečník",
+        equipment: "Expandéry",
+        description: "Tricepsový pushdown s gumou uchycenou nahoře na dveřích. Domácí alternativa kladky."
+      },
+      {
+        id: "arms-10",
+        name: "Kladivové zdvihy s expandérem",
+        category: "Ruce",
+        difficulty: "Začátečník",
+        equipment: "Expandéry",
+        description: "Kladivový zdvih s odporovou gumou. Zapojuje brachialis i biceps."
       },
     ],
   },
@@ -302,6 +390,30 @@ export const bodyPartsData: BodyPart[] = [
         equipment: "Vlastní váha",
         description: "Současné zvedání trupu i nohou do tvaru V. Komplexní cvik na celé břicho."
       },
+      {
+        id: "abs-7",
+        name: "Mountain Climbers",
+        category: "Břicho",
+        difficulty: "Střední",
+        equipment: "Vlastní váha",
+        description: "Dynamické přitahování kolen k hrudníku ve vzporu. Kombinuje kardio a core práci."
+      },
+      {
+        id: "abs-8",
+        name: "Flutter Kicks",
+        category: "Břicho",
+        difficulty: "Střední",
+        equipment: "Vlastní váha",
+        description: "Střídavé kopy nohama vleže na zádech. Izolují spodní část břicha a hip flexory."
+      },
+      {
+        id: "abs-9",
+        name: "Russian Twists s vlastní váhou",
+        category: "Břicho",
+        difficulty: "Začátečník",
+        equipment: "Vlastní váha",
+        description: "Rotace trupu v sedě bez závaží. Lehčí verze pro domácí trénink šikmých svalů."
+      },
     ],
   },
   {
@@ -358,6 +470,30 @@ export const bodyPartsData: BodyPart[] = [
         equipment: "Vlastní váha",
         description: "Plank s rotací trupu. Zapojí břicho, záda i ramena díky kruhovému pohybu."
       },
+      {
+        id: "core-7",
+        name: "Hollow Body Hold",
+        category: "Core",
+        difficulty: "Střední",
+        equipment: "Vlastní váha",
+        description: "Gymnastická pozice vleže na zádech s nataženýma rukama a nohama. Extrémně efektivní na hluboké core svaly."
+      },
+      {
+        id: "core-8",
+        name: "Bear Crawl",
+        category: "Core",
+        difficulty: "Střední",
+        equipment: "Vlastní váha",
+        description: "Plazení na čtyřech s koleny nad zemí. Funkční cvik na celé tělo s důrazem na stabilizaci trupu."
+      },
+      {
+        id: "core-9",
+        name: "Pallof Press s expandérem",
+        category: "Core",
+        difficulty: "Střední",
+        equipment: "Expandéry",
+        description: "Domácí verze Pallof Pressu s gumou uchycenou na dveřní kliku. Anti-rotační core cvičení."
+      },
     ],
   },
   {
@@ -405,6 +541,38 @@ export const bodyPartsData: BodyPart[] = [
         difficulty: "Začátečník",
         equipment: "Vlastní váha",
         description: "Obrácený sněhový andělíček vleže na břiše. Posiluje vzpřimovače páteře a deltové svaly."
+      },
+      {
+        id: "back-6",
+        name: "Přítahy pod stolem (Inverted Rows)",
+        category: "Záda",
+        difficulty: "Střední",
+        equipment: "Vlastní váha",
+        description: "Přítahy těla pod hranou stolu nebo tyčí nízko nad zemí. Domácí alternativa přítahů."
+      },
+      {
+        id: "back-7",
+        name: "Prone Y Raises",
+        category: "Záda",
+        difficulty: "Začátečník",
+        equipment: "Vlastní váha",
+        description: "Vleže na břiše zvedejte ruce do tvaru Y. Posiluje spodní trapézy a mezilopatkové svaly."
+      },
+      {
+        id: "back-8",
+        name: "Přítahy s expandérem",
+        category: "Záda",
+        difficulty: "Začátečník",
+        equipment: "Expandéry",
+        description: "Přítahový pohyb s gumou uchycenou na dveřích nebo sloupku. Nahrazuje stahování kladky."
+      },
+      {
+        id: "back-9",
+        name: "Good Mornings s vlastní váhou",
+        category: "Záda",
+        difficulty: "Začátečník",
+        equipment: "Vlastní váha",
+        description: "Předklon s rukama za hlavou a rovnými zády. Posiluje vzpřimovače páteře a hamstringy."
       },
     ],
   },
@@ -478,6 +646,54 @@ export const bodyPartsData: BodyPart[] = [
         equipment: "Vlastní váha",
         description: "Step-upy na lavičku nebo bednu. Posiluje stehna a hýždě unilaterálně."
       },
+      {
+        id: "legs-9",
+        name: "Pistol Squats (Jednonožní dřep)",
+        category: "Nohy",
+        difficulty: "Pokročilý",
+        equipment: "Vlastní váha",
+        description: "Dřep na jedné noze. Extrémní nároky na sílu, rovnováhu a mobilitu. Královský cvik na nohy doma."
+      },
+      {
+        id: "legs-10",
+        name: "Glute Bridge",
+        category: "Nohy",
+        difficulty: "Začátečník",
+        equipment: "Vlastní váha",
+        description: "Zdvih pánve vleže na zádech. Aktivuje hýžďové svaly a stabilizátory pánve."
+      },
+      {
+        id: "legs-11",
+        name: "Jump Squats",
+        category: "Nohy",
+        difficulty: "Střední",
+        equipment: "Vlastní váha",
+        description: "Explozivní dřepy s výskokem. Budují výbušnost a kardio kondici současně."
+      },
+      {
+        id: "legs-12",
+        name: "Wall Sit (Dřep u zdi)",
+        category: "Nohy",
+        difficulty: "Začátečník",
+        equipment: "Vlastní váha",
+        description: "Izometrický dřep s oporou zad o zeď. Posiluje stehna výdrží v pozici."
+      },
+      {
+        id: "legs-13",
+        name: "Výpady s vlastní váhou",
+        category: "Nohy",
+        difficulty: "Začátečník",
+        equipment: "Vlastní váha",
+        description: "Klasické výpady vpřed bez závaží. Unilaterální cvik na stehna, hýždě a stabilitu."
+      },
+      {
+        id: "legs-14",
+        name: "Sumo Squats",
+        category: "Nohy",
+        difficulty: "Začátečník",
+        equipment: "Vlastní váha",
+        description: "Dřepy s širokým postavením nohou. Více zapojují vnitřní stehna a hýždě."
+      },
     ],
   },
 ];
@@ -547,6 +763,50 @@ export const workoutPlansData: WorkoutPlan[] = [
       { day: "Čtvrtek", workout: "Upper Hypertrophy", muscles: ["Prsa", "Záda", "Ruce"] },
       { day: "Pátek", workout: "Lower Hypertrophy", muscles: ["Hamstringy", "Lýtka"] },
       { day: "Sobota", workout: "Odpočinek", muscles: [], isRest: true },
+      { day: "Neděle", workout: "Odpočinek", muscles: [], isRest: true },
+    ]
+  },
+  {
+    id: "home-bodyweight",
+    name: "Domácí Bodyweight Program",
+    description: "Kompletní tréninkový plán bez vybavení. Stačí ti jen vlastní tělo a kousek prostoru.",
+    duration: "4 dny/týden",
+    difficulty: "Začátečník",
+    targetParts: ["Celé tělo"],
+    tags: ["Doma", "Vlastní váha", "Bez vybavení", "Začátečník"],
+    estimatedTime: "35 min",
+    estimatedCalories: 350,
+    splitType: "Full Body",
+    exercises: [],
+    weeklySchedule: [
+      { day: "Pondělí", workout: "Horní tělo (Doma)", muscles: ["Prsa", "Ramena", "Triceps"], },
+      { day: "Úterý", workout: "Dolní tělo (Doma)", muscles: ["Stehna", "Hýždě", "Lýtka"], },
+      { day: "Středa", workout: "Odpočinek / Mobilita", muscles: [], isRest: true },
+      { day: "Čtvrtek", workout: "Core & Břicho (Doma)", muscles: ["Břicho", "Core", "Záda"], },
+      { day: "Pátek", workout: "Full Body HIIT (Doma)", muscles: ["Celé tělo"], },
+      { day: "Sobota", workout: "Odpočinek", muscles: [], isRest: true },
+      { day: "Neděle", workout: "Odpočinek / Strečink", muscles: [], isRest: true },
+    ]
+  },
+  {
+    id: "home-advanced",
+    name: "Domácí Pokročilý Calisthenics",
+    description: "Náročný domácí program s vlastní váhou pro pokročilé. Pistol squats, archer push-ups, stojky.",
+    duration: "5 dní/týden",
+    difficulty: "Pokročilý",
+    targetParts: ["Celé tělo"],
+    tags: ["Doma", "Calisthenics", "Pokročilý", "Síla"],
+    estimatedTime: "50 min",
+    estimatedCalories: 500,
+    splitType: "Push/Pull/Legs",
+    exercises: [],
+    weeklySchedule: [
+      { day: "Pondělí", workout: "Push (Doma)", muscles: ["Prsa", "Ramena", "Triceps"], },
+      { day: "Úterý", workout: "Pull & Záda (Doma)", muscles: ["Záda", "Biceps"], },
+      { day: "Středa", workout: "Nohy & Core (Doma)", muscles: ["Nohy", "Core", "Břicho"], },
+      { day: "Čtvrtek", workout: "Odpočinek / Mobilita", muscles: [], isRest: true },
+      { day: "Pátek", workout: "Upper Body Skills", muscles: ["Ramena", "Prsa", "Záda"], },
+      { day: "Sobota", workout: "Lower Body & HIIT", muscles: ["Nohy", "Kardio"], },
       { day: "Neděle", workout: "Odpočinek", muscles: [], isRest: true },
     ]
   },

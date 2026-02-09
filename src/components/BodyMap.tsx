@@ -222,7 +222,7 @@ export default function BodyMap({ onPartClick }: BodyMapProps) {
                   </span>
                 </div>
                 <div
-                  className="h-2 bg-[#0a0a0a] rounded-full overflow-hidden"
+                  className="h-2 bg-[var(--bg-secondary)] rounded-full overflow-hidden"
                   role="progressbar"
                   aria-valuenow={part.progress}
                   aria-valuemin={0}

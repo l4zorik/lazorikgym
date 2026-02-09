@@ -21,7 +21,10 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { useXPSystem, LEVELS } from "@/hooks/useXPSystem";
 import { MobileNav } from "@/components/MobileNav";
+import LevelBadge from "@/components/penalty/LevelBadge";
+import XPBar from "@/components/penalty/XPBar";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 
@@ -160,6 +163,7 @@ export default function ChallengesPage() {
   const [challenges, setChallenges] = useLocalStorage<Challenge[]>("challenges", initialChallenges);
   const [activeFilter, setActiveFilter] = useState<"all" | "daily" | "weekly" | "monthly" | "special">("all");
   const [userPoints] = useLocalStorage("challenge_points", 0);
+  const { xpProfile } = useXPSystem();
 
   const filteredChallenges = challenges.filter(c => 
     activeFilter === "all" || c.type === activeFilter
@@ -185,9 +189,9 @@ export default function ChallengesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#030303] text-white">
+    <div className="min-h-screen bg-[var(--bg-primary)] text-white">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-[#030303]/80 backdrop-blur-xl border-b border-white/5">
+      <header className="sticky top-0 z-50 bg-[var(--bg-primary)]/80 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -202,9 +206,11 @@ export default function ChallengesPage() {
                 <p className="text-sm text-gray-500">Plň úkoly a získávej odměny</p>
               </div>
             </div>
-            <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-gradient-to-r from-[#ff6b35] to-[#e53935]">
-              <Trophy className="w-5 h-5" />
-              <span className="font-bold">{userPoints} bodů</span>
+            <div className="flex items-center gap-3">
+              <LevelBadge size="sm" />
+              <div className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#ff6b35] to-[#e53935]">
+                <span className="font-bold">{xpProfile.totalXP} XP</span>
+              </div>
             </div>
           </div>
         </div>
@@ -404,8 +410,19 @@ export default function ChallengesPage() {
           </Card>
         )}
 
+        {/* XP Overview */}
+        <div className="mt-12 mb-8">
+          <h2 className="text-xl font-bold mb-6 flex items-center gap-3">
+            <Zap className="w-6 h-6 text-[#f59e0b]" />
+            Tvoje XP
+          </h2>
+          <Card className="p-6">
+            <XPBar />
+          </Card>
+        </div>
+
         {/* Leaderboard Preview */}
-        <div className="mt-12">
+        <div className="mt-8">
           <h2 className="text-xl font-bold mb-6 flex items-center gap-3">
             <Crown className="w-6 h-6 text-[#f59e0b]" />
             Žebříček nejlepších
@@ -416,36 +433,55 @@ export default function ChallengesPage() {
                 { name: "Tomáš P.", points: 12500, avatar: "TP" },
                 { name: "Lucie M.", points: 11200, avatar: "LM" },
                 { name: "David H.", points: 10800, avatar: "DH" },
+                { name: "Ty", points: xpProfile.totalXP, avatar: "JÁ", isUser: true },
                 { name: "Markéta V.", points: 9500, avatar: "MV" },
                 { name: "Petr S.", points: 9200, avatar: "PS" },
-              ].map((user, index) => (
-                <div
-                  key={user.name}
-                  className="flex items-center gap-4 p-3 rounded-xl bg-white/5"
-                >
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${
-                    index === 0
-                      ? "bg-yellow-500 text-black"
-                      : index === 1
-                      ? "bg-gray-300 text-black"
-                      : index === 2
-                      ? "bg-amber-700 text-white"
-                      : "bg-white/10 text-gray-400"
-                  }`}>
-                    {index + 1}
-                  </div>
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#ff6b35] to-[#e53935] flex items-center justify-center font-bold text-sm">
-                    {user.avatar}
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-semibold">{user.name}</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Trophy className="w-4 h-4 text-[#f59e0b]" />
-                    <span className="font-bold">{user.points.toLocaleString()}</span>
-                  </div>
-                </div>
-              ))}
+              ]
+                .sort((a, b) => b.points - a.points)
+                .map((user, index) => {
+                  const isUser = "isUser" in user && user.isUser;
+                  return (
+                    <div
+                      key={user.name}
+                      className={`flex items-center gap-4 p-3 rounded-xl ${
+                        isUser ? "bg-[#ff6b35]/10 border border-[#ff6b35]/20" : "bg-white/5"
+                      }`}
+                    >
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${
+                        index === 0
+                          ? "bg-yellow-500 text-black"
+                          : index === 1
+                          ? "bg-gray-300 text-black"
+                          : index === 2
+                          ? "bg-amber-700 text-white"
+                          : "bg-white/10 text-gray-400"
+                      }`}>
+                        {index + 1}
+                      </div>
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm ${
+                        isUser
+                          ? "bg-gradient-to-br from-[#f59e0b] to-[#ff6b35]"
+                          : "bg-gradient-to-br from-[#ff6b35] to-[#e53935]"
+                      }`}>
+                        {user.avatar}
+                      </div>
+                      <div className="flex-1">
+                        <p className={`font-semibold ${isUser ? "text-[#ff6b35]" : ""}`}>
+                          {user.name}
+                          {isUser && (
+                            <span className="ml-2 text-xs text-gray-500">
+                              (Lv.{xpProfile.currentLevel} {xpProfile.levelName})
+                            </span>
+                          )}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Zap className="w-4 h-4 text-[#f59e0b]" />
+                        <span className="font-bold">{user.points.toLocaleString()} XP</span>
+                      </div>
+                    </div>
+                  );
+                })}
             </div>
           </Card>
         </div>

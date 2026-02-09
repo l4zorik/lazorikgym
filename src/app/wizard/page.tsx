@@ -120,7 +120,7 @@ export default function PlanWizardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#030303] text-white flex flex-col">
+    <div className="min-h-screen bg-[var(--bg-primary)] text-white flex flex-col">
       {/* Header */}
       <header className="p-4 border-b border-white/5 flex items-center justify-between">
         <button 

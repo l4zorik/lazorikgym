@@ -46,14 +46,14 @@ export default function HistoryPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#030303] text-white">
+    <div className="min-h-screen bg-[var(--bg-primary)] text-white">
       {/* Header */}
-      <header className="p-6 border-b border-[#2a2a2a] bg-[#0a0a0a] sticky top-0 z-10">
+      <header className="p-6 border-b border-[var(--border-color)] bg-[var(--bg-secondary)] sticky top-0 z-10">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center gap-4 mb-6">
             <Link
               href="/dashboard"
-              className="p-2 rounded-lg hover:bg-[#141414] transition-colors"
+              className="p-2 rounded-lg hover:bg-[var(--bg-card)] transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
             </Link>
@@ -72,7 +72,7 @@ export default function HistoryPage() {
               placeholder="Hledat v historii..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-[#141414] border border-[#2a2a2a] rounded-xl py-3 pl-12 pr-4 font-medium focus:outline-none focus:border-[#ff6b35] transition-all"
+              className="w-full bg-[var(--bg-card)] border border-[var(--border-color)] rounded-xl py-3 pl-12 pr-4 font-medium focus:outline-none focus:border-[#ff6b35] transition-all"
             />
           </div>
         </div>
@@ -112,20 +112,20 @@ export default function HistoryPage() {
                       {session.items.slice(0, 3).map((item, i) => (
                         <span
                           key={i}
-                          className="px-2 py-1 rounded-md bg-[#0a0a0a] text-xs text-gray-400 border border-[#2a2a2a]"
+                          className="px-2 py-1 rounded-md bg-[var(--bg-secondary)] text-xs text-gray-400 border border-[var(--border-color)]"
                         >
                           {item.exerciseName}
                         </span>
                       ))}
                       {session.items.length > 3 && (
-                        <span className="px-2 py-1 rounded-md bg-[#0a0a0a] text-xs text-gray-600">
+                        <span className="px-2 py-1 rounded-md bg-[var(--bg-secondary)] text-xs text-gray-600">
                           +{session.items.length - 3} další
                         </span>
                       )}
                     </div>
                   </div>
                 </div>
-                <button className="p-2 rounded-lg hover:bg-[#0a0a0a] transition-colors">
+                <button className="p-2 rounded-lg hover:bg-[var(--bg-secondary)] transition-colors">
                   <ChevronRight className="w-5 h-5 text-gray-600" />
                 </button>
               </div>
@@ -133,7 +133,7 @@ export default function HistoryPage() {
           ))
         ) : (
           <div className="text-center py-20">
-            <div className="w-20 h-20 bg-[#0a0a0a] rounded-full flex items-center justify-center mx-auto mb-6 text-gray-600">
+            <div className="w-20 h-20 bg-[var(--bg-secondary)] rounded-full flex items-center justify-center mx-auto mb-6 text-gray-600">
               <Dumbbell className="w-10 h-10" />
             </div>
             <h2 className="text-xl font-bold mb-2">Žádné tréninky</h2>

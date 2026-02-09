@@ -13,12 +13,12 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant = "default", hover = false, glow = false, ...props }, ref) => {
     const variants = {
       default: "bg-white/[0.02] border border-white/5 backdrop-blur-sm",
-      elevated: "bg-[#0a0a0a] border border-white/5 shadow-2xl shadow-black/40",
+      elevated: "bg-[var(--bg-secondary)] border border-white/5 shadow-2xl shadow-black/40",
       outline: "bg-transparent border-2 border-white/10 hover:border-white/20",
       ghost: "bg-transparent",
       gradient: "bg-gradient-to-br from-white/[0.08] via-white/[0.03] to-white/[0.01] border border-white/10",
       glass: "bg-white/[0.03] backdrop-blur-2xl border border-white/10 shadow-xl shadow-black/20",
-      neon: "bg-[#0a0a0a] border border-[#ff6b35]/20 shadow-lg shadow-[#ff6b35]/5",
+      neon: "bg-[var(--bg-secondary)] border border-[#ff6b35]/20 shadow-lg shadow-[#ff6b35]/5",
     };
 
     return (

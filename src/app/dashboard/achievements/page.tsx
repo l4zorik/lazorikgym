@@ -133,7 +133,7 @@ export default function AchievementsPage() {
   ];
 
   return (
-    <main className="min-h-screen bg-[#030303] text-white overflow-x-hidden">
+    <main className="min-h-screen bg-[var(--bg-primary)] text-white overflow-x-hidden">
       {/* Background effects */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-gradient-to-r from-[#ff6b35]/10 to-[#ff3366]/10 rounded-full blur-[150px]" />

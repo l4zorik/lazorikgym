@@ -66,7 +66,7 @@ export default function WorkoutHoverPreview({ workout }: WorkoutHoverPreviewProp
       transition={{ duration: 0.2, ease: "easeOut" }}
       className="absolute right-0 top-full mt-2 z-50 w-72 pointer-events-none"
     >
-      <div className={`rounded-2xl bg-[#0a0a0a] border border-white/10 shadow-2xl shadow-black/60 overflow-hidden`}>
+      <div className={`rounded-2xl bg-[var(--bg-secondary)] border border-white/10 shadow-2xl shadow-black/60 overflow-hidden`}>
         {/* Header gradient */}
         <div className={`p-4 bg-gradient-to-r ${config.gradient} relative overflow-hidden`}>
           <div className="flex items-center gap-3 relative z-10">

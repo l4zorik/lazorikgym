@@ -51,7 +51,7 @@ export default function RegisterPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#030303] flex">
+    <div className="min-h-screen bg-[var(--bg-primary)] flex">
       {/* Left side - Visual */}
       <div className="hidden lg:flex flex-1 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#ff6b35] to-[#e53935]" />

@@ -163,7 +163,7 @@ export default function WorkoutPlannerModal({
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
-            className="relative w-full max-w-lg bg-[#0a0a0a] border border-white/10 rounded-3xl shadow-2xl max-h-[85vh] flex flex-col"
+            className="relative w-full max-w-lg bg-[var(--bg-secondary)] border border-white/10 rounded-3xl shadow-2xl max-h-[85vh] flex flex-col"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-white/5">

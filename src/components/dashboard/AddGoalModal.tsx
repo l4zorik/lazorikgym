@@ -90,7 +90,7 @@ export default function AddGoalModal({
 
           {/* Modal */}
           <motion.div
-            className="relative w-full max-w-lg bg-[#0a0a0a] rounded-3xl border border-white/10 overflow-hidden shadow-2xl"
+            className="relative w-full max-w-lg bg-[var(--bg-secondary)] rounded-3xl border border-white/10 overflow-hidden shadow-2xl"
             initial={{ scale: 0.95, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.95, opacity: 0, y: 20 }}

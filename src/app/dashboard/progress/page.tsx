@@ -157,9 +157,9 @@ export default function ProgressPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#030303] text-white">
+    <div className="min-h-screen bg-[var(--bg-primary)] text-white">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-[#030303]/80 backdrop-blur-xl border-b border-white/5">
+      <header className="sticky top-0 z-50 bg-[var(--bg-primary)]/80 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex items-center gap-4">
             <Link
@@ -510,7 +510,7 @@ export default function ProgressPage() {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-6 max-w-md w-full"
+              className="bg-[var(--bg-secondary)] border border-white/10 rounded-2xl p-6 max-w-md w-full"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-6">
@@ -602,7 +602,7 @@ function WeightModal({ onClose, onSave }: { onClose: () => void; onSave: (weight
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-6 max-w-md w-full"
+        className="bg-[var(--bg-secondary)] border border-white/10 rounded-2xl p-6 max-w-md w-full"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-6">
@@ -679,7 +679,7 @@ function MeasurementModal({
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-6 max-w-md w-full"
+        className="bg-[var(--bg-secondary)] border border-white/10 rounded-2xl p-6 max-w-md w-full"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-6">
@@ -699,7 +699,7 @@ function MeasurementModal({
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white appearance-none focus:outline-none focus:border-[#ff6b35]"
               >
                 {options.map((opt) => (
-                  <option key={opt.id} value={opt.id} className="bg-[#0a0a0a]">
+                  <option key={opt.id} value={opt.id} className="bg-[var(--bg-secondary)]">
                     {opt.name}
                   </option>
                 ))}

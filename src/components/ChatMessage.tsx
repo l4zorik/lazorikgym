@@ -40,7 +40,7 @@ export default function ChatMessage({ message }: ChatMessageProps) {
         className={`
           relative max-w-[80%] p-3 rounded-2xl text-sm transition-all duration-300 group-hover:scale-[1.01]
           ${isAssistant
-            ? "bg-[#1a1a1a] border border-[#2a2a2a] text-white rounded-tl-sm message-glow"
+            ? "bg-[#1a1a1a] border border-[var(--border-color)] text-white rounded-tl-sm message-glow"
             : "bg-gradient-to-br from-[#ff6b35]/20 to-[#e53935]/20 text-white rounded-tr-sm border border-[#ff6b35]/10"
           }
         `}
@@ -71,7 +71,7 @@ export function TypingIndicator() {
         {/* Pulsing glow */}
         <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-[#ff6b35] to-[#e53935] animate-ping opacity-30" />
       </div>
-      <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-2xl rounded-tl-sm p-3 relative overflow-hidden">
+      <div className="bg-[#1a1a1a] border border-[var(--border-color)] rounded-2xl rounded-tl-sm p-3 relative overflow-hidden">
         {/* Background shimmer */}
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#ff6b35]/5 to-transparent animate-shimmer" />
 

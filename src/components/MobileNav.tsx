@@ -29,7 +29,7 @@ export function MobileNav() {
         {/* Top gradient line */}
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#ff6b35]/30 to-transparent" />
 
-        <div className="bg-[#0a0a0a]/95 backdrop-blur-xl border-t border-white/5">
+        <div className="bg-[var(--bg-secondary)]/95 backdrop-blur-xl border-t border-white/5">
           <div className="flex justify-around items-center h-16 px-2">
             {navItems.map((item, index) => {
               const isActive = pathname === item.href;
@@ -86,7 +86,7 @@ export function MobileNav() {
         </div>
 
         {/* Safe area padding for iOS */}
-        <div className="h-safe-area-inset-bottom bg-[#0a0a0a]/95" />
+        <div className="h-safe-area-inset-bottom bg-[var(--bg-secondary)]/95" />
       </div>
     </nav>
   );

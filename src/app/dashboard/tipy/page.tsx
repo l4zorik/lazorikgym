@@ -9,13 +9,13 @@ export default function Tipy() {
   const categories = ["Vse", "Trenink", "Vyziva", "Regenerace", "Prevence"];
 
   return (
-    <div className="min-h-screen bg-[#030303] text-white">
+    <div className="min-h-screen bg-[var(--bg-primary)] text-white">
       {/* Header */}
-      <header className="p-6 border-b border-[#2a2a2a] bg-[#0a0a0a] sticky top-0 z-10">
+      <header className="p-6 border-b border-[var(--border-color)] bg-[var(--bg-secondary)] sticky top-0 z-10">
         <div className="max-w-4xl mx-auto flex items-center gap-4">
           <Link
             href="/dashboard"
-            className="p-2 rounded-lg hover:bg-[#141414] transition-colors"
+            className="p-2 rounded-lg hover:bg-[var(--bg-card)] transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
@@ -37,7 +37,7 @@ export default function Tipy() {
               className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all ${
                 i === 0
                   ? "bg-gradient-to-r from-[#ff6b35] to-[#e53935] text-white"
-                  : "bg-[#141414] text-gray-400 border border-[#2a2a2a] hover:border-[#ff6b35]"
+                  : "bg-[var(--bg-card)] text-gray-400 border border-[var(--border-color)] hover:border-[#ff6b35]"
               }`}
             >
               {cat}
@@ -71,10 +71,10 @@ export default function Tipy() {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <button className="p-2 rounded-lg hover:bg-[#141414] transition-colors">
+              <button className="p-2 rounded-lg hover:bg-[var(--bg-card)] transition-colors">
                 <Heart className="w-5 h-5 text-gray-600" />
               </button>
-              <button className="p-2 rounded-lg hover:bg-[#141414] transition-colors">
+              <button className="p-2 rounded-lg hover:bg-[var(--bg-card)] transition-colors">
                 <Bookmark className="w-5 h-5 text-gray-600" />
               </button>
             </div>
@@ -91,7 +91,7 @@ export default function Tipy() {
                 <div className="flex-1">
                   <div className="flex items-start justify-between mb-2">
                     <h3 className="font-bold">{tip.title}</h3>
-                    <span className="px-2 py-0.5 rounded bg-[#0a0a0a] text-xs text-gray-600">
+                    <span className="px-2 py-0.5 rounded bg-[var(--bg-secondary)] text-xs text-gray-600">
                       {tip.category}
                     </span>
                   </div>

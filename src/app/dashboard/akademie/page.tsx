@@ -34,9 +34,9 @@ export default function AcademyPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#030303] text-white">
+    <div className="min-h-screen bg-[var(--bg-primary)] text-white">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-[#030303]/80 backdrop-blur-xl border-b border-white/5">
+      <header className="sticky top-0 z-50 bg-[var(--bg-primary)]/80 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-4">
@@ -266,7 +266,7 @@ function ArticleModal({ article, onClose }: { article: AcademyArticle, onClose: 
         initial={{ y: 50, opacity: 0, scale: 0.95 }}
         animate={{ y: 0, opacity: 1, scale: 1 }}
         exit={{ y: 50, opacity: 0, scale: 0.95 }}
-        className="bg-[#0a0a0a] border border-white/10 w-full max-w-4xl max-h-full overflow-y-auto rounded-3xl shadow-2xl"
+        className="bg-[var(--bg-secondary)] border border-white/10 w-full max-w-4xl max-h-full overflow-y-auto rounded-3xl shadow-2xl"
         onClick={e => e.stopPropagation()}
       >
         {/* Banner */}

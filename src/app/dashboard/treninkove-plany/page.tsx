@@ -28,13 +28,15 @@ import { workoutPlansData } from "@/lib/data";
 import { MobileNav } from "@/components/MobileNav";
 import { usePlan } from "@/hooks/usePlan";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
-import { ScheduledWorkout } from "@/types";
+import { ScheduledWorkout, PlanProgress } from "@/types";
+import PlanProgressDashboard from "@/components/plan/PlanProgressDashboard";
 
 export default function TreninkovePlanyPage() {
   const { activeWorkoutPlanId, activateWorkoutPlan, deactivateWorkoutPlan, currentWeekNumber } = usePlan();
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(activeWorkoutPlanId || workoutPlansData[0].id);
   const [viewMode, setViewMode] = useState<'grid' | 'detail'>('grid');
   const [scheduledWorkouts] = useLocalStorage<ScheduledWorkout[]>("scheduled_workouts", []);
+  const [planProgress, setPlanProgress] = useLocalStorage<PlanProgress | null>("plan_progress", null);
 
   const selectedPlan = useMemo(() =>
     workoutPlansData.find((p) => p.id === selectedPlanId),
@@ -89,9 +91,9 @@ export default function TreninkovePlanyPage() {
   }, [isActive, selectedPlan, dayCompletionStatus]);
 
   return (
-    <div className="min-h-screen bg-[#030303] text-white">
+    <div className="min-h-screen bg-[var(--bg-primary)] text-white">
       {/* Premium Header */}
-      <header className="sticky top-0 z-50 bg-[#030303]/80 backdrop-blur-xl border-b border-white/5">
+      <header className="sticky top-0 z-50 bg-[var(--bg-primary)]/80 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/dashboard" className="p-2 rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
@@ -349,6 +351,16 @@ export default function TreninkovePlanyPage() {
                     />
                   </div>
                 </motion.div>
+              )}
+
+              {/* Enhanced Plan Progress Dashboard */}
+              {isActive && planProgress && (
+                <PlanProgressDashboard
+                  progress={planProgress}
+                  planName={selectedPlan?.name || "Plán"}
+                  onViewDetails={() => setViewMode('detail')}
+                  onViewMilestones={() => {}}
+                />
               )}
 
               {/* Weekly Timeline */}

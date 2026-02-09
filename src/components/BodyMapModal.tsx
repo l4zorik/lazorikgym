@@ -30,7 +30,7 @@ export default function BodyMapModal({ isOpen, onClose, bodyPart }: BodyMapModal
           className={`p-4 rounded-xl flex items-center gap-4 ${
             isWeak
               ? "bg-gradient-to-r from-[#ff6b35]/10 to-[#e53935]/10 border border-[#ff6b35]/30"
-              : "bg-[#141414] border border-[#2a2a2a]"
+              : "bg-[var(--bg-card)] border border-[var(--border-color)]"
           }`}
         >
           <div
@@ -67,7 +67,7 @@ export default function BodyMapModal({ isOpen, onClose, bodyPart }: BodyMapModal
             {weeklyPlan.map((day, i) => (
               <div
                 key={i}
-                className="p-4 rounded-xl bg-[#141414] border border-[#2a2a2a] flex items-center justify-between hover:bg-[#1a1a1a] transition-colors cursor-pointer group"
+                className="p-4 rounded-xl bg-[var(--bg-card)] border border-[var(--border-color)] flex items-center justify-between hover:bg-[#1a1a1a] transition-colors cursor-pointer group"
               >
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-lg bg-[#1a1a1a] flex items-center justify-center text-[#ff6b35] font-bold text-sm">
@@ -94,7 +94,7 @@ export default function BodyMapModal({ isOpen, onClose, bodyPart }: BodyMapModal
             {bodyPart.exercises.slice(0, 4).map((exercise) => (
               <div
                 key={exercise.id}
-                className="p-4 rounded-xl bg-[#141414] border border-[#2a2a2a] hover:border-[#ff6b35]/50 transition-colors"
+                className="p-4 rounded-xl bg-[var(--bg-card)] border border-[var(--border-color)] hover:border-[#ff6b35]/50 transition-colors"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -123,10 +123,10 @@ export default function BodyMapModal({ isOpen, onClose, bodyPart }: BodyMapModal
         </div>
 
         {/* CTA */}
-        <div className="flex gap-3 pt-4 border-t border-[#2a2a2a]">
+        <div className="flex gap-3 pt-4 border-t border-[var(--border-color)]">
           <button
             onClick={onClose}
-            className="flex-1 py-3 px-6 rounded-xl bg-[#1a1a1a] text-white font-semibold border border-[#2a2a2a] hover:bg-[#222222] transition-colors"
+            className="flex-1 py-3 px-6 rounded-xl bg-[#1a1a1a] text-white font-semibold border border-[var(--border-color)] hover:bg-[#222222] transition-colors"
           >
             Zavřít
           </button>

@@ -17,7 +17,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const inputId = id || label?.toLowerCase().replace(/\s+/g, "-");
 
     const variants = {
-      default: "bg-[#0a0a0a] border-white/10 focus:border-[#ff6b35] focus:bg-[#0f0f0f]",
+      default: "bg-[var(--bg-secondary)] border-white/10 focus:border-[#ff6b35] focus:bg-[#0f0f0f]",
       glass: "bg-white/[0.03] backdrop-blur-xl border-white/10 focus:border-[#ff6b35]/50 focus:bg-white/[0.05]",
       filled: "bg-white/[0.05] border-transparent focus:border-[#ff6b35]/50 focus:bg-white/[0.08]",
     };

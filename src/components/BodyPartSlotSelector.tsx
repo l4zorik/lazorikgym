@@ -378,10 +378,10 @@ export default function BodyPartSlotSelector({
         )}
 
         {/* Actions */}
-        <div className="flex gap-3 pt-4 border-t border-[#2a2a2a]">
+        <div className="flex gap-3 pt-4 border-t border-[var(--border-color)]">
           <button
             onClick={onClose}
-            className="flex-1 py-3 px-6 rounded-xl bg-[#1a1a1a] text-white font-semibold border border-[#2a2a2a] hover:bg-[#222222] transition-colors"
+            className="flex-1 py-3 px-6 rounded-xl bg-[#1a1a1a] text-white font-semibold border border-[var(--border-color)] hover:bg-[#222222] transition-colors"
           >
             Zrušit
           </button>

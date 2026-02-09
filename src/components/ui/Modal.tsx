@@ -44,8 +44,8 @@ const DialogContent = React.forwardRef<
   };
 
   const variants = {
-    default: "bg-[#0a0a0a] border-white/10",
-    glass: "bg-[#0a0a0a]/80 backdrop-blur-2xl border-white/10",
+    default: "bg-[var(--bg-secondary)] border-white/10",
+    glass: "bg-[var(--bg-secondary)]/80 backdrop-blur-2xl border-white/10",
   };
 
   return (

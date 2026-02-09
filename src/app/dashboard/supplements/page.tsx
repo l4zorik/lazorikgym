@@ -133,9 +133,9 @@ export default function SupplementsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#030303] text-white">
+    <div className="min-h-screen bg-[var(--bg-primary)] text-white">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-[#030303]/80 backdrop-blur-xl border-b border-white/5">
+      <header className="sticky top-0 z-50 bg-[var(--bg-primary)]/80 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -242,7 +242,7 @@ export default function SupplementsPage() {
                     className="appearance-none bg-white/5 border border-white/10 rounded-xl px-4 py-2 pr-10 text-sm focus:outline-none focus:border-[#ff6b35]"
                   >
                     {waterGoals.map(goal => (
-                      <option key={goal} value={goal} className="bg-[#0a0a0a]">{goal} ml</option>
+                      <option key={goal} value={goal} className="bg-[var(--bg-secondary)]">{goal} ml</option>
                     ))}
                   </select>
                   <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
@@ -502,7 +502,7 @@ function WaterModal({ onClose, onAdd }: { onClose: () => void; onAdd: (amount: n
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-6 max-w-md w-full"
+        className="bg-[var(--bg-secondary)] border border-white/10 rounded-2xl p-6 max-w-md w-full"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-6">
@@ -572,7 +572,7 @@ function SupplementModal({ onClose, onAdd }: { onClose: () => void; onAdd: (s: O
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto"
+        className="bg-[var(--bg-secondary)] border border-white/10 rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-6">

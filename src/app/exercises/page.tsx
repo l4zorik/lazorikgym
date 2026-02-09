@@ -40,15 +40,15 @@ export default function ExercisesPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#030303] flex flex-col">
+    <div className="min-h-screen bg-[var(--bg-primary)] flex flex-col">
       {/* Header */}
-      <header className="p-4 bg-[#0a0a0a] border-b border-[#2a2a2a] sticky top-0 z-20">
+      <header className="p-4 bg-[var(--bg-secondary)] border-b border-[var(--border-color)] sticky top-0 z-20">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-4">
               <Link
                 href="/dashboard"
-                className="p-2 -ml-2 rounded-lg hover:bg-[#141414] transition-colors"
+                className="p-2 -ml-2 rounded-lg hover:bg-[var(--bg-card)] transition-colors"
               >
                 <ArrowLeft className="w-6 h-6" />
               </Link>
@@ -74,7 +74,7 @@ export default function ExercisesPage() {
               placeholder="Hledat cvik (např. Bench Press)..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-[#141414] border border-[#2a2a2a] rounded-xl py-3 pl-12 pr-4 font-medium focus:outline-none focus:border-[#ff6b35] focus:ring-2 focus:ring-[#ff6b35]/20 transition-all"
+              className="w-full bg-[var(--bg-card)] border border-[var(--border-color)] rounded-xl py-3 pl-12 pr-4 font-medium focus:outline-none focus:border-[#ff6b35] focus:ring-2 focus:ring-[#ff6b35]/20 transition-all"
             />
           </div>
 
@@ -138,7 +138,7 @@ export default function ExercisesPage() {
                 className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition-all ${
                   activeCategory === cat
                     ? "bg-gradient-to-r from-[#ff6b35] to-[#e53935] text-white shadow-lg"
-                    : "bg-[#141414] text-gray-400 border border-[#2a2a2a] hover:border-[#ff6b35]"
+                    : "bg-[var(--bg-card)] text-gray-400 border border-[var(--border-color)] hover:border-[#ff6b35]"
                 }`}
               >
                 {cat}
@@ -165,7 +165,7 @@ export default function ExercisesPage() {
                   <div>
                     <h3 className="font-bold">{ex.name}</h3>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="text-xs font-medium px-2 py-0.5 rounded bg-[#0a0a0a] text-gray-600">
+                      <span className="text-xs font-medium px-2 py-0.5 rounded bg-[var(--bg-secondary)] text-gray-600">
                         {ex.bodyPart}
                       </span>
                       <span
@@ -197,7 +197,7 @@ export default function ExercisesPage() {
 
           {filteredExercises.length === 0 && (
             <div className="text-center py-12">
-              <div className="w-16 h-16 bg-[#141414] rounded-full flex items-center justify-center mx-auto mb-4 text-gray-600">
+              <div className="w-16 h-16 bg-[var(--bg-card)] rounded-full flex items-center justify-center mx-auto mb-4 text-gray-600">
                 <Search className="w-8 h-8" />
               </div>
               <h3 className="text-lg font-semibold">Žádné cviky nenalezeny</h3>

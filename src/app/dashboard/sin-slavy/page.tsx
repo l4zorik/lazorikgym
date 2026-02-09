@@ -7,13 +7,13 @@ import { hallOfFameData } from "@/lib/data";
 
 export default function SinSlavy() {
   return (
-    <div className="min-h-screen bg-[#030303] text-white">
+    <div className="min-h-screen bg-[var(--bg-primary)] text-white">
       {/* Header */}
-      <header className="p-6 border-b border-[#2a2a2a] bg-[#0a0a0a] sticky top-0 z-10">
+      <header className="p-6 border-b border-[var(--border-color)] bg-[var(--bg-secondary)] sticky top-0 z-10">
         <div className="max-w-4xl mx-auto flex items-center gap-4">
           <Link
             href="/dashboard"
-            className="p-2 rounded-lg hover:bg-[#141414] transition-colors"
+            className="p-2 rounded-lg hover:bg-[var(--bg-card)] transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>

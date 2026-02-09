@@ -51,10 +51,18 @@ import EquipmentModal from "@/components/dashboard/EquipmentModal";
 import WorkoutHoverPreview from "@/components/dashboard/WorkoutHoverPreview";
 import GoalsSection from "@/components/dashboard/GoalsSection";
 import AddGoalModal from "@/components/dashboard/AddGoalModal";
+import WorkoutMoodTracker from "@/components/dashboard/WorkoutMoodTracker";
+import PeriodOverview from "@/components/dashboard/PeriodOverview";
 import { BodyPart, WorkoutSession, ScheduledWorkout } from "@/types";
 import { MobileNav } from "@/components/MobileNav";
 import { usePlan } from "@/hooks/usePlan";
 import { useGoals } from "@/hooks/useGoals";
+import { useWorkoutPostProcess } from "@/hooks/useWorkoutPostProcess";
+import PenaltyDashboardWidget from "@/components/penalty/PenaltyDashboardWidget";
+import LevelBadge from "@/components/penalty/LevelBadge";
+import DebtCounter from "@/components/penalty/DebtCounter";
+import QuestBoard from "@/components/quest/QuestBoard";
+import { useQuests } from "@/hooks/useQuests";
 
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -93,6 +101,27 @@ export default function DashboardPage() {
   const [userEquipment, setUserEquipment] = useLocalStorage<string[]>("user_equipment", ["Vlastní váha"]);
   const tracker = useDailyTracker();
   const goals = useGoals();
+  const { runPenaltyCheck, currentStreak } = useWorkoutPostProcess();
+  const questSystem = useQuests();
+
+  // Run penalty check on dashboard load
+  useEffect(() => {
+    if (!isHydrated) return;
+    runPenaltyCheck();
+  }, [isHydrated]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Auto-progress quest objectives (streak, hydration, sleep, nutrition)
+  useEffect(() => {
+    if (!tracker.isHydrated || questSystem.activeQuests.length === 0) return;
+    const proteinMet = tracker.nutrientGoals.protein > 0
+      && tracker.todayNutrients.protein >= tracker.nutrientGoals.protein;
+    questSystem.checkAutoProgress({
+      currentStreak,
+      waterPercentage: tracker.waterPercentage,
+      sleepHours: tracker.todaySleep?.hours ?? null,
+      proteinMet,
+    });
+  }, [tracker.isHydrated, tracker.waterPercentage, tracker.todaySleep?.hours, tracker.todayNutrients.protein]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Initialize date and always seed tomorrow's workouts if missing
   useEffect(() => {
@@ -375,9 +404,9 @@ export default function DashboardPage() {
     : goalConfig.default;
 
   return (
-    <div className="min-h-screen bg-[#030303] text-white">
+    <div className="min-h-screen bg-[var(--bg-primary)] text-white">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-[#030303]/80 backdrop-blur-xl border-b border-white/5">
+      <header className="sticky top-0 z-50 bg-[var(--bg-primary)]/80 backdrop-blur-xl border-b border-white/5">
         <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 2rem' }}>
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-8">
@@ -407,6 +436,10 @@ export default function DashboardPage() {
             </div>
 
             <div className="flex items-center gap-4">
+              <div className="hidden sm:block">
+                <LevelBadge size="sm" showName={false} />
+              </div>
+              <DebtCounter compact />
               <div className="text-right hidden sm:block">
                 <p className="text-sm font-medium">{user?.name || "Host"}</p>
                 <p className="text-xs text-gray-600">{user?.email}</p>
@@ -428,63 +461,16 @@ export default function DashboardPage() {
       <main className="pb-24 lg:pb-12">
         <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '2rem' }}>
 
-          {/* Goal-Aware Welcome & Focus Section */}
-          <div className="mb-16">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
-              <div>
-                <h1 className="text-5xl font-black mb-3 tracking-tight">
-                  Ahoj, {user?.name?.split(' ')[0] || 'sportovče'} 👋
-                </h1>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: currentGoal.color }} />
-                  <p className="text-gray-400 text-xl font-medium">{currentGoal.title}</p>
-                </div>
-              </div>
-              
-              {/* Focus Task Widget */}
-              <div className="bg-white/[0.03] border border-white/5 p-6 rounded-3xl max-w-sm relative overflow-hidden group hover:border-[#ff6b35]/30 transition-all">
-                <div className="flex items-start gap-4 relative z-10">
-                  <div className="w-12 h-12 rounded-2xl bg-[#ff6b35]/20 flex items-center justify-center shrink-0">
-                    <Sparkles className="w-6 h-6 text-[#ff6b35]" />
-                  </div>
-                  <div>
-                    <h3 className="text-xs font-bold text-[#ff6b35] uppercase tracking-widest mb-1">Dnešní Focus</h3>
-                    <p className="text-sm text-gray-300 leading-relaxed">{currentGoal.focusTask}</p>
-                  </div>
-                </div>
-                <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-[#ff6b35]/5 rounded-full blur-2xl group-hover:bg-[#ff6b35]/10 transition-all" />
-              </div>
-            </div>
+          {/* 1. Mise (Quest Board) */}
+          <QuestBoard
+            activeQuests={questSystem.activeQuests}
+            availableTemplates={questSystem.availableTemplates}
+            onStartQuest={questSystem.startQuest}
+            onAbandonQuest={questSystem.abandonQuest}
+            onCompleteQuest={questSystem.completeQuest}
+          />
 
-            {/* Smart Insight Banner */}
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="p-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-white/5 rounded-2xl flex items-center gap-4 mb-8"
-            >
-              <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
-                <Brain className="w-5 h-5 text-blue-400" />
-              </div>
-              <p className="text-sm font-medium text-blue-200">
-                <span className="text-blue-400 font-bold mr-2">AI Insight:</span>
-                {currentGoal.insight}
-              </p>
-            </motion.div>
-          </div>
-
-          {/* Today Overview Stats */}
-          <div className="mb-10">
-            <TodayOverview
-              calories={tracker.todayCalories}
-              waterPercentage={tracker.waterPercentage}
-              sleepHours={tracker.todaySleep?.hours ?? null}
-              mood={tracker.todayMoodEntry?.mood ?? null}
-              todayWorkoutsCount={todaysWorkouts.length}
-              isHydrated={tracker.isHydrated}
-            />
-          </div>
-
-          {/* Today's Workouts - Click to Start */}
+          {/* 2. Dnešní tréninky */}
           <div className="mb-10">
             <TodayWorkouts
               scheduledWorkouts={scheduledWorkouts}
@@ -495,7 +481,7 @@ export default function DashboardPage() {
             />
           </div>
 
-          {/* Goals Section */}
+          {/* 3. Cíle */}
           <div className="mb-10">
             <GoalsSection
               goals={goals.activeGoals}
@@ -507,13 +493,18 @@ export default function DashboardPage() {
             />
           </div>
 
-          {/* Quick Planner Button */}
+          {/* 4. Tréninková nálada (Motivace / Lenost) */}
           <div className="mb-10">
-            <QuickPlannerButton onClick={() => setShowPlanner(true)} />
+            <WorkoutMoodTracker />
           </div>
 
-          {/* Daily Tracker Section */}
-          <div className="mb-16">
+          {/* 5. Denní / Měsíční / Roční přehled */}
+          <div className="mb-10">
+            <PeriodOverview />
+          </div>
+
+          {/* 6. Daily Tracker (jídlo, voda, spánek, nálada) */}
+          <div className="mb-10">
             <DailyTrackerSection
               todayFood={tracker.todayFood}
               todayCalories={tracker.todayCalories}
@@ -531,6 +522,67 @@ export default function DashboardPage() {
               onSetSleep={tracker.setSleep}
               onSetMood={tracker.setMood}
             />
+          </div>
+
+          {/* Quick Planner Button */}
+          <div className="mb-10">
+            <QuickPlannerButton onClick={() => setShowPlanner(true)} />
+          </div>
+
+          {/* Today Overview Stats */}
+          <div className="mb-10">
+            <TodayOverview
+              calories={tracker.todayCalories}
+              waterPercentage={tracker.waterPercentage}
+              sleepHours={tracker.todaySleep?.hours ?? null}
+              mood={tracker.todayMoodEntry?.mood ?? null}
+              todayWorkoutsCount={todaysWorkouts.length}
+              isHydrated={tracker.isHydrated}
+            />
+          </div>
+
+          {/* Welcome & Focus Section */}
+          <div className="mb-16">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+              <div>
+                <h1 className="text-5xl font-black mb-3 tracking-tight">
+                  Ahoj, {user?.name?.split(' ')[0] || 'sportovče'} 👋
+                </h1>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: currentGoal.color }} />
+                  <p className="text-gray-400 text-xl font-medium">{currentGoal.title}</p>
+                </div>
+              </div>
+
+              {/* Focus Task Widget */}
+              <div className="bg-white/[0.03] border border-white/5 p-6 rounded-3xl max-w-sm relative overflow-hidden group hover:border-[#ff6b35]/30 transition-all">
+                <div className="flex items-start gap-4 relative z-10">
+                  <div className="w-12 h-12 rounded-2xl bg-[#ff6b35]/20 flex items-center justify-center shrink-0">
+                    <Sparkles className="w-6 h-6 text-[#ff6b35]" />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-bold text-[#ff6b35] uppercase tracking-widest mb-1">Dnešní Focus</h3>
+                    <p className="text-sm text-gray-300 leading-relaxed">{currentGoal.focusTask}</p>
+                  </div>
+                </div>
+                <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-[#ff6b35]/5 rounded-full blur-2xl group-hover:bg-[#ff6b35]/10 transition-all" />
+              </div>
+            </div>
+
+            {/* Smart Insight Banner */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="p-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-white/5 rounded-2xl flex items-center gap-4 mb-8"
+            >
+              <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                <Brain className="w-5 h-5 text-blue-400" />
+              </div>
+              <p className="text-sm font-medium text-blue-200">
+                <span className="text-blue-400 font-bold mr-2">AI Insight:</span>
+                {currentGoal.insight}
+              </p>
+            </motion.div>
           </div>
 
           {/* Dynamic Stats Row */}
@@ -823,6 +875,9 @@ export default function DashboardPage() {
 
             {/* Right Column - Sidebar */}
             <div className="space-y-10">
+
+              {/* XP & Penalty Widget */}
+              <PenaltyDashboardWidget />
 
               {/* AI Assistant */}
               <AIAssistantCard weakBodyParts={weakParts} />
