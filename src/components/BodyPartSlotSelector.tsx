@@ -1,8 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { bodyPartsData, getWeakBodyParts } from "@/lib/data";
 import Modal from "@/components/ui/Modal";
+import DailyChallengeGenerator from "@/components/challenges/DailyChallengeGenerator";
+import { useDailyChallenges } from "@/hooks/useDailyChallenges";
 import {
   Check,
   Target,
@@ -12,7 +15,8 @@ import {
   ArrowDown,
   RotateCcw,
   Sparkles,
-  ChevronRight
+  ChevronRight,
+  Flame
 } from "lucide-react";
 
 interface BodyPartSlotSelectorProps {
@@ -100,6 +104,8 @@ export default function BodyPartSlotSelector({
 }: BodyPartSlotSelectorProps) {
   const [tempSelection, setTempSelection] = useState<string[]>(selectedPartIds);
   const [activeTab, setActiveTab] = useState<TabType>("templates");
+  const [showChallengeGenerator, setShowChallengeGenerator] = useState(false);
+  const { generateChallengeSetForParts, startChallenge } = useDailyChallenges();
 
   // Reset temp selection when modal opens
   useEffect(() => {
@@ -158,16 +164,41 @@ export default function BodyPartSlotSelector({
 
   const handleSave = () => {
     onSelectionChange(tempSelection);
+    // Otevři generátor výzev po uložení
+    if (tempSelection.length > 0) {
+      setShowChallengeGenerator(true);
+    }
+    // Zavři slot selector
+    // onClose(); // Možná nechat otevřený pro více akcí
+  };
+
+  const handleGeneratorClose = () => {
+    setShowChallengeGenerator(false);
     onClose();
+  };
+
+  const handleGenerateChallenges = (partIds: string[]) => {
+    const challenges = generateChallengeSetForParts(partIds);
+    return challenges;
+  };
+
+  const handleChallengeStart = (challenge: any) => {
+    startChallenge(challenge.id);
   };
 
   const canSave = tempSelection.length >= 1 && tempSelection.length <= 5;
 
   // Get body part data by ID
   const getPartById = (id: string) => bodyPartsData.find((p) => p.id === id);
+  
+  // Get part names for challenge generator
+  const selectedPartNames = tempSelection
+    .map(id => getPartById(id)?.name)
+    .filter(Boolean) as string[];
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Vyber svoje partie" size="lg">
+    <>
+      <Modal isOpen={isOpen} onClose={onClose} title="Vyber svoje partie" size="lg">
       <div className="space-y-6">
         {/* Tabs */}
         <div className="flex gap-2 p-1 bg-white/5 rounded-xl">
@@ -377,6 +408,27 @@ export default function BodyPartSlotSelector({
           </div>
         )}
 
+        {/* Challenge Generator Button */}
+        {tempSelection.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-4 rounded-xl bg-gradient-to-r from-orange-950/50 to-red-950/50 border border-orange-500/30"
+          >
+            <button
+              onClick={handleSave}
+              className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-orange-500 via-red-500 to-orange-500 bg-[length:200%_100%] text-white font-bold flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-orange-500/30 transition-all hover:scale-[1.02]"
+            >
+              <Flame className="w-5 h-5" />
+              GENERUJ DENNÍ VÝZVU
+              <Sparkles className="w-5 h-5" />
+            </button>
+            <p className="text-xs text-gray-500 text-center mt-2">
+              Po uložení se ti vygeneruje unikátní výzva
+            </p>
+          </motion.div>
+        )}
+
         {/* Actions */}
         <div className="flex gap-3 pt-4 border-t border-[var(--border-color)]">
           <button
@@ -402,5 +454,15 @@ export default function BodyPartSlotSelector({
         </div>
       </div>
     </Modal>
+
+    <DailyChallengeGenerator
+      isOpen={showChallengeGenerator}
+      onClose={handleGeneratorClose}
+      selectedParts={tempSelection}
+      partNames={selectedPartNames}
+      onGenerate={handleGenerateChallenges}
+      onChallengeStart={handleChallengeStart}
+    />
+    </>
   );
 }

@@ -3,6 +3,13 @@
 import { useState, useCallback } from "react";
 import { ChatMessage, BodyPart, WorkoutSession } from "@/types";
 import { generateAIResponse, generateRecommendations } from "@/lib/aiResponses";
+import { getAIResponse, model as hasGemini } from "@/lib/gemini";
+import { useDailyTracker } from "@/hooks/useDailyTracker";
+import { useGoals } from "@/hooks/useGoals";
+import { bodyPartsData } from "@/lib/data";
+import { getMartialArtById } from "@/lib/martialArtsData";
+import { getBookById } from "@/lib/booksData";
+import { getFacilityById } from "@/lib/facilitiesData";
 
 interface UseAIChatReturn {
   messages: ChatMessage[];
@@ -17,6 +24,9 @@ function generateId(): string {
 }
 
 export function useAIChat(weakParts: BodyPart[], history: WorkoutSession[] = []): UseAIChatReturn {
+  const tracker = useDailyTracker();
+  const goals = useGoals();
+
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: "welcome",
@@ -33,7 +43,6 @@ export function useAIChat(weakParts: BodyPart[], history: WorkoutSession[] = [])
     async (content: string) => {
       if (!content.trim() || isLoading) return;
 
-      // Add user message
       const userMessage: ChatMessage = {
         id: generateId(),
         role: "user",
@@ -44,23 +53,64 @@ export function useAIChat(weakParts: BodyPart[], history: WorkoutSession[] = [])
       setMessages((prev) => [...prev, userMessage]);
       setIsLoading(true);
 
-      // Simulate AI thinking delay
-      await new Promise((resolve) => setTimeout(resolve, 800 + Math.random() * 700));
+      try {
+        let aiResponseContent = "";
 
-      // Generate AI response
-      const aiResponse = generateAIResponse(content, weakParts, history);
+        if (hasGemini) {
+          // Prepare rich context for the AI
+          const context = {
+            user_history: history.slice(-5), // Last 5 workouts
+            weak_parts: weakParts.map(p => ({ name: p.name, progress: p.progress })),
+            daily_stats: {
+              calories: tracker.todayCalories,
+              water: tracker.waterPercentage,
+              sleep: tracker.todaySleep,
+              mood: tracker.todayMoodEntry
+            },
+            active_goals: goals.activeGoals.map(g => {
+              if (g.category === 'body_part') {
+                const part = bodyPartsData.find(p => p.id === g.bodyPartId);
+                return part?.name || 'Unknown';
+              } else if (g.category === 'martial_art' && g.martialArtId) {
+                const ma = getMartialArtById(g.martialArtId);
+                return ma?.name || 'Unknown';
+              } else if (g.category === 'book' && g.bookId) {
+                const book = getBookById(g.bookId);
+                return book?.title || 'Unknown';
+              } else if (g.category === 'facility' && g.facilityId) {
+                const facility = getFacilityById(g.facilityId);
+                return facility?.name || 'Unknown';
+              }
+              return 'Unknown';
+            }),
+            stats: {
+              total_workouts: history.length,
+              current_streak: 0 // Will be added from streak hook if needed
+            }
+          };
 
-      const assistantMessage: ChatMessage = {
-        id: generateId(),
-        role: "assistant",
-        content: aiResponse,
-        timestamp: new Date(),
-      };
+          aiResponseContent = await getAIResponse(content, context);
+        } else {
+          // Fallback to legacy template system if no API key
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+          aiResponseContent = generateAIResponse(content, weakParts, history);
+        }
 
-      setMessages((prev) => [...prev, assistantMessage]);
-      setIsLoading(false);
+        const assistantMessage: ChatMessage = {
+          id: generateId(),
+          role: "assistant",
+          content: aiResponseContent,
+          timestamp: new Date(),
+        };
+
+        setMessages((prev) => [...prev, assistantMessage]);
+      } catch (error) {
+        console.error("Chat Error:", error);
+      } finally {
+        setIsLoading(false);
+      }
     },
-    [weakParts, isLoading]
+    [weakParts, history, tracker, goals, isLoading]
   );
 
   const clearHistory = useCallback(() => {
