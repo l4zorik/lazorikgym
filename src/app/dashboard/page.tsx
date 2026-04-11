@@ -65,6 +65,7 @@ import QuestBoard from "@/components/quest/QuestBoard";
 import LoginStreakBanner from "@/components/dashboard/LoginStreakBanner";
 import { useQuests } from "@/hooks/useQuests";
 import { useLoginStreak } from "@/hooks/useLoginStreak";
+import DailyChallengesWidget from "@/components/challenges/DailyChallengesWidget";
 
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -501,6 +502,9 @@ export default function DashboardPage() {
               onRemoveGoal={goals.removeGoal}
               onStartGoalWorkout={handleStartWorkout}
               onRateGoal={goals.rateGoal}
+              onIncrementWorkout={goals.incrementWorkout}
+              onUpdateBookProgress={goals.updateBookProgress}
+              onIncrementVisit={goals.incrementVisit}
             />
           </div>
 
@@ -1236,6 +1240,9 @@ export default function DashboardPage() {
         isOpen={showGoalModal}
         onClose={() => setShowGoalModal(false)}
         onCreateGoal={goals.addGoal}
+        onCreateMartialArtGoal={goals.addMartialArtGoal}
+        onCreateBookGoal={goals.addBookGoal}
+        onCreateFacilityGoal={goals.addFacilityGoal}
         existingGoalPartIds={goals.existingGoalPartIds}
       />
       <NutrientGoalsModal

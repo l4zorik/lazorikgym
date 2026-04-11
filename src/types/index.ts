@@ -506,3 +506,151 @@ export interface QuestObjective {
   linkedWorkoutIds?: string[];
   linkedExerciseIds?: string[];
 }
+
+// ==================== Extended Goals System ====================
+
+export type GoalCategory = 'body_part' | 'martial_art' | 'book' | 'facility';
+
+export interface ExtendedGoal {
+  id: string;
+  category: GoalCategory;
+  // body_part goals
+  bodyPartId?: string;
+  planId?: string;
+  startProgress?: number;
+  targetProgress?: number;
+  completedWorkouts?: number;
+  totalWorkoutsNeeded?: number;
+  weekNumber?: number;
+  // martial_art goals
+  martialArtId?: string;
+  // book goals
+  bookId?: string;
+  pagesRead?: number;
+  totalPages?: number;
+  // facility goals
+  facilityId?: string;
+  visitCount?: number;
+  targetVisits?: number;
+  // shared
+  createdAt: string;
+  status: 'active' | 'completed' | 'abandoned';
+  userRating?: number;
+  userNote?: string;
+}
+
+export interface MartialArt {
+  id: string;
+  name: string;
+  emoji: string;
+  description: string;
+  color: string;
+  difficulty: 'Začátečník' | 'Střední' | 'Pokročilý';
+  benefits: string[];
+  durationWeeks: number;
+  frequencyPerWeek: number;
+  techniques: string[];
+}
+
+export interface FitnessBook {
+  id: string;
+  title: string;
+  author: string;
+  category: 'fitness' | 'mindset' | 'nutrition' | 'martial_arts' | 'recovery';
+  description: string;
+  pages: number;
+  rating: number;
+  tags: string[];
+  emoji: string;
+}
+
+export interface Facility {
+  id: string;
+  type: 'gym' | 'library' | 'physio' | 'nutritionist' | 'psychologist' | 'coach' | 'yoga' | 'pool';
+  name: string;
+  description: string;
+  emoji: string;
+  color: string;
+  benefits: string[];
+  recommendedVisits: number;
+  visitUnit: string;
+}
+
+// ==================== Supplement Database ====================
+
+export interface SupplementInfo {
+  id: string;
+  name: string;
+  category: 'protein' | 'amino' | 'vitamin' | 'mineral' | 'performance' | 'health' | 'fat_burner';
+  description: string;
+  benefits: string[];
+  dosage: string;
+  timing: string;
+  sideEffects: string[];
+  emoji: string;
+  rating: number;
+  evidence: 'vysoká' | 'střední' | 'nízká';
+}
+
+// ==================== Food Database ====================
+
+export interface FoodItem {
+  id: string;
+  name: string;
+  category: 'protein_source' | 'carb_source' | 'fat_source' | 'vegetable' | 'fruit' | 'dairy' | 'snack' | 'meal';
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  fiber?: number;
+  emoji: string;
+  tags: string[];
+  servingSize: string;
+  description?: string;
+}
+
+// ==================== Drinks Database ====================
+
+export interface DrinkItem {
+  id: string;
+  name: string;
+  category: 'water' | 'sport' | 'protein_drink' | 'tea' | 'coffee' | 'juice' | 'other';
+  calories: number;
+  protein: number;
+  carbs: number;
+  sugar: number;
+  caffeine?: number;
+  emoji: string;
+  benefits: string[];
+  servingSize: string;
+  description: string;
+}
+
+// ==================== Steroids Educational Database ====================
+
+export interface SteroidInfo {
+  id: string;
+  name: string;
+  otherNames: string[];
+  category: 'anabolic' | 'sarm' | 'peptide' | 'other';
+  description: string;
+  mechanism: string;
+  sideEffects: string[];
+  healthRisks: string[];
+  legalStatus: string;
+  emoji: string;
+  dangerLevel: 1 | 2 | 3 | 4 | 5;
+}
+
+// ==================== Nutrition Guide ====================
+
+export interface NutritionArticle {
+  id: string;
+  title: string;
+  category: 'basics' | 'macros' | 'timing' | 'diets' | 'myths';
+  summary: string;
+  content: string;
+  emoji: string;
+  tags: string[];
+  readTime: string;
+}

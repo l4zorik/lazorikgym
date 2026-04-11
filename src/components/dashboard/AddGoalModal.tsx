@@ -1,11 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { X, Star, Clock, Calendar, Dumbbell, ChevronLeft, ChevronDown, ChevronUp, Check, Target } from "lucide-react";
+import { X, Star, Clock, Calendar, Dumbbell, ChevronLeft, ChevronDown, ChevronUp, Check, Target, BookOpen } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { BodyPartPlan } from "@/types";
+import { BodyPartPlan, GoalCategory, FitnessBook } from "@/types";
 import { bodyPartsData } from "@/lib/data";
 import { getPlansForBodyPart } from "@/lib/goalPlans";
+import { martialArtsData } from "@/lib/martialArtsData";
+import { booksData, bookCategoryLabels } from "@/lib/booksData";
+import { facilitiesData } from "@/lib/facilitiesData";
 
 const bodyPartEmoji: Record<string, string> = {
   neck: "🦴",
@@ -24,10 +27,20 @@ const difficultyColor: Record<string, string> = {
   "Pokročilý": "#ef4444",
 };
 
+const categoryCards: { id: GoalCategory; label: string; emoji: string; description: string; color: string }[] = [
+  { id: "body_part", label: "Partie těla", emoji: "🏋️", description: "Tréninkové plány pro konkrétní svaly", color: "#ff6b35" },
+  { id: "martial_art", label: "Bojová umění", emoji: "🥊", description: "Vyber si bojové umění a začni trénovat", color: "#ef4444" },
+  { id: "book", label: "Knihy", emoji: "📚", description: "Sebevzdělávací knihy pro fitness i mysl", color: "#8b5cf6" },
+  { id: "facility", label: "Místa & Specialisté", emoji: "🏥", description: "Posilovny, terapeuti a další specialisté", color: "#10b981" },
+];
+
 interface AddGoalModalProps {
   isOpen: boolean;
   onClose: () => void;
   onCreateGoal: (bodyPartId: string, planId: string, plan: BodyPartPlan) => void;
+  onCreateMartialArtGoal: (martialArtId: string) => void;
+  onCreateBookGoal: (bookId: string) => void;
+  onCreateFacilityGoal: (facilityId: string) => void;
   existingGoalPartIds: string[];
 }
 
@@ -35,22 +48,32 @@ export default function AddGoalModal({
   isOpen,
   onClose,
   onCreateGoal,
+  onCreateMartialArtGoal,
+  onCreateBookGoal,
+  onCreateFacilityGoal,
   existingGoalPartIds,
 }: AddGoalModalProps) {
-  const [step, setStep] = useState<1 | 2>(1);
+  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [selectedCategory, setSelectedCategory] = useState<GoalCategory | null>(null);
   const [selectedPartId, setSelectedPartId] = useState<string | null>(null);
   const [expandedExercises, setExpandedExercises] = useState<string | null>(null);
 
   const handleClose = () => {
     setStep(1);
+    setSelectedCategory(null);
     setSelectedPartId(null);
     setExpandedExercises(null);
     onClose();
   };
 
+  const handleSelectCategory = (category: GoalCategory) => {
+    setSelectedCategory(category);
+    setStep(2);
+  };
+
   const handleSelectPart = (partId: string) => {
     setSelectedPartId(partId);
-    setStep(2);
+    setStep(3);
   };
 
   const handleSelectPlan = (plan: BodyPartPlan) => {
@@ -60,15 +83,46 @@ export default function AddGoalModal({
   };
 
   const handleBack = () => {
-    setStep(1);
-    setSelectedPartId(null);
-    setExpandedExercises(null);
+    if (step === 3) {
+      setStep(2);
+      setSelectedPartId(null);
+      setExpandedExercises(null);
+    } else {
+      setStep(1);
+      setSelectedCategory(null);
+      setSelectedPartId(null);
+      setExpandedExercises(null);
+    }
   };
 
   const plans = selectedPartId ? getPlansForBodyPart(selectedPartId) : [];
   const selectedBodyPart = selectedPartId
     ? bodyPartsData.find((p) => p.id === selectedPartId)
     : null;
+
+  const getStepLabel = () => {
+    if (step === 1) return "Krok 1 - Vyber kategorii";
+    if (step === 2 && selectedCategory === "body_part") return "Krok 2/3 - Vyber partii";
+    if (step === 3) return `Krok 3/3 - Plány pro ${selectedBodyPart?.name}`;
+    return "Krok 2/2 - Vyber si";
+  };
+
+  const getTitle = () => {
+    if (step === 1) return "Nový cíl";
+    if (step === 2) {
+      const cat = categoryCards.find(c => c.id === selectedCategory);
+      return cat?.label ?? "Vyber si";
+    }
+    if (step === 3) return `Plány pro ${selectedBodyPart?.name}`;
+    return "Nový cíl";
+  };
+
+  // Group books by category
+  const booksByCategory = booksData.reduce<Record<string, FitnessBook[]>>((acc, book) => {
+    if (!acc[book.category]) acc[book.category] = [];
+    acc[book.category].push(book);
+    return acc;
+  }, {});
 
   return (
     <AnimatePresence>
@@ -99,7 +153,7 @@ export default function AddGoalModal({
             {/* Header */}
             <div className="px-6 py-4 border-b border-white/5 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                {step === 2 && (
+                {step > 1 && (
                   <button
                     onClick={handleBack}
                     className="p-1.5 rounded-lg hover:bg-white/5 transition-colors text-gray-400 hover:text-white"
@@ -108,14 +162,8 @@ export default function AddGoalModal({
                   </button>
                 )}
                 <div>
-                  <h2 className="text-lg font-bold">
-                    {step === 1 ? "Nový cíl" : `Plány pro ${selectedBodyPart?.name}`}
-                  </h2>
-                  <p className="text-xs text-gray-500">
-                    {step === 1
-                      ? "Krok 1/2 - Vyber partii"
-                      : "Krok 2/2 - Vyber plán"}
-                  </p>
+                  <h2 className="text-lg font-bold">{getTitle()}</h2>
+                  <p className="text-xs text-gray-500">{getStepLabel()}</p>
                 </div>
               </div>
               <button
@@ -129,10 +177,43 @@ export default function AddGoalModal({
             {/* Content */}
             <div className="max-h-[70vh] overflow-y-auto">
               <AnimatePresence mode="wait">
+                {/* Step 1: Category selection */}
                 {step === 1 && (
                   <motion.div
-                    key="step1"
+                    key="step-category"
                     initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    className="p-6"
+                  >
+                    <p className="text-sm text-gray-400 mb-6 text-center">
+                      Jaký typ cíle chceš přidat?
+                    </p>
+                    <div className="grid grid-cols-2 gap-3">
+                      {categoryCards.map((cat) => (
+                        <button
+                          key={cat.id}
+                          onClick={() => handleSelectCategory(cat.id)}
+                          className="relative p-4 rounded-2xl border text-left transition-all bg-white/[0.02] border-white/5 hover:border-white/20 hover:bg-white/[0.04]"
+                        >
+                          <div className="text-3xl mb-3">{cat.emoji}</div>
+                          <h3 className="font-bold text-sm mb-1">{cat.label}</h3>
+                          <p className="text-[11px] text-gray-500 leading-snug">{cat.description}</p>
+                          <div
+                            className="absolute top-0 right-0 w-16 h-16 rounded-bl-3xl opacity-10"
+                            style={{ backgroundColor: cat.color }}
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Step 2: Body Part selection */}
+                {step === 2 && selectedCategory === "body_part" && (
+                  <motion.div
+                    key="step-bodypart"
+                    initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
                     className="p-6"
@@ -140,7 +221,6 @@ export default function AddGoalModal({
                     <p className="text-sm text-gray-400 mb-6 text-center">
                       Která partie tě nejvíc trápí?
                     </p>
-
                     <div className="grid grid-cols-2 gap-3">
                       {bodyPartsData.map((part) => {
                         const hasGoal = existingGoalPartIds.includes(part.id);
@@ -169,12 +249,10 @@ export default function AddGoalModal({
                                 Už máš cíl
                               </span>
                             )}
-
                             <div className="flex items-center gap-3 mb-3">
                               <span className="text-2xl">{bodyPartEmoji[part.id] || "💪"}</span>
                               <span className="font-bold text-sm">{part.name}</span>
                             </div>
-
                             <div className="space-y-1.5">
                               <div className="flex items-center justify-between">
                                 <span className="text-[10px] text-gray-500">Progres</span>
@@ -203,9 +281,10 @@ export default function AddGoalModal({
                   </motion.div>
                 )}
 
-                {step === 2 && selectedPartId && (
+                {/* Step 3: Plan selection (body part) */}
+                {step === 3 && selectedCategory === "body_part" && selectedPartId && (
                   <motion.div
-                    key="step2"
+                    key="step-plan"
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: 20 }}
@@ -224,7 +303,6 @@ export default function AddGoalModal({
                           className="rounded-2xl border border-white/10 bg-white/[0.02] overflow-hidden hover:border-white/20 transition-all"
                         >
                           <div className="p-5 space-y-4">
-                            {/* Title + difficulty */}
                             <div className="flex items-start justify-between">
                               <div>
                                 <h3 className="font-bold text-base">{plan.name}</h3>
@@ -241,7 +319,6 @@ export default function AddGoalModal({
                               </span>
                             </div>
 
-                            {/* Rating */}
                             <div className="flex items-center gap-2">
                               <div className="flex items-center gap-0.5">
                                 {[1, 2, 3, 4, 5].map((star) => (
@@ -259,7 +336,6 @@ export default function AddGoalModal({
                               <span className="text-[10px] text-gray-600">({plan.ratingCount} hodnocení)</span>
                             </div>
 
-                            {/* Info pills */}
                             <div className="flex flex-wrap gap-2">
                               <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/5 text-xs text-gray-400">
                                 <Calendar className="w-3 h-3" />
@@ -275,7 +351,6 @@ export default function AddGoalModal({
                               </span>
                             </div>
 
-                            {/* Tags */}
                             <div className="flex flex-wrap gap-1.5">
                               {plan.tags.map((tag) => (
                                 <span
@@ -287,22 +362,20 @@ export default function AddGoalModal({
                               ))}
                             </div>
 
-                            {/* Weekly progression */}
                             <div className="space-y-2">
                               <p className="text-[10px] text-gray-500 uppercase font-semibold tracking-wider">Progrese</p>
                               <div className="space-y-1.5">
-                                {plan.weeklyProgression.map((step, idx) => (
+                                {plan.weeklyProgression.map((s, idx) => (
                                   <div key={idx} className="flex items-start gap-2">
                                     <div className="w-5 h-5 rounded-full bg-white/5 flex items-center justify-center shrink-0 mt-0.5">
                                       <span className="text-[9px] font-bold text-gray-500">{idx + 1}</span>
                                     </div>
-                                    <p className="text-xs text-gray-400">{step}</p>
+                                    <p className="text-xs text-gray-400">{s}</p>
                                   </div>
                                 ))}
                               </div>
                             </div>
 
-                            {/* Exercises toggle */}
                             <button
                               onClick={() => setExpandedExercises(isExpanded ? null : plan.id)}
                               className="w-full flex items-center justify-between py-2 text-xs text-gray-500 hover:text-gray-300 transition-colors"
@@ -342,7 +415,6 @@ export default function AddGoalModal({
                               )}
                             </AnimatePresence>
 
-                            {/* CTA */}
                             <button
                               onClick={() => handleSelectPlan(plan)}
                               className="w-full py-3 rounded-xl bg-gradient-to-r from-[#ff6b35] to-[#e53935] text-white font-bold text-sm hover:shadow-lg hover:shadow-[#ff6b35]/20 transition-all flex items-center justify-center gap-2"
@@ -354,6 +426,151 @@ export default function AddGoalModal({
                         </div>
                       );
                     })}
+                  </motion.div>
+                )}
+
+                {/* Step 2: Martial Arts selection */}
+                {step === 2 && selectedCategory === "martial_art" && (
+                  <motion.div
+                    key="step-martial"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    className="p-6"
+                  >
+                    <p className="text-sm text-gray-400 mb-6 text-center">
+                      Které bojové umění tě láká?
+                    </p>
+                    <div className="grid grid-cols-2 gap-3">
+                      {martialArtsData.map((ma) => (
+                        <button
+                          key={ma.id}
+                          onClick={() => {
+                            onCreateMartialArtGoal(ma.id);
+                            handleClose();
+                          }}
+                          className="relative p-4 rounded-2xl border text-left transition-all bg-white/[0.02] border-white/5 hover:border-white/20 hover:bg-white/[0.04]"
+                        >
+                          <div className="text-2xl mb-2">{ma.emoji}</div>
+                          <h3 className="font-bold text-sm mb-1">{ma.name}</h3>
+                          <p className="text-[10px] text-gray-500 leading-snug line-clamp-2">{ma.description}</p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <span
+                              className="px-1.5 py-0.5 rounded text-[9px] font-bold"
+                              style={{
+                                backgroundColor: `${difficultyColor[ma.difficulty]}20`,
+                                color: difficultyColor[ma.difficulty],
+                              }}
+                            >
+                              {ma.difficulty}
+                            </span>
+                            <span className="text-[10px] text-gray-600">
+                              {ma.durationWeeks} týd. • {ma.frequencyPerWeek}x/týd.
+                            </span>
+                          </div>
+                          <div
+                            className="absolute top-0 right-0 w-12 h-12 rounded-bl-3xl opacity-10"
+                            style={{ backgroundColor: ma.color }}
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Step 2: Books selection */}
+                {step === 2 && selectedCategory === "book" && (
+                  <motion.div
+                    key="step-book"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    className="p-6 space-y-6"
+                  >
+                    <p className="text-sm text-gray-400 text-center">
+                      Vyber knihu, kterou chceš přečíst
+                    </p>
+                    {Object.entries(booksByCategory).map(([cat, books]) => (
+                      <div key={cat}>
+                        <div className="flex items-center gap-2 mb-3">
+                          <BookOpen className="w-4 h-4 text-gray-500" />
+                          <h3 className="text-sm font-bold text-gray-300">
+                            {bookCategoryLabels[cat as FitnessBook["category"]] ?? cat}
+                          </h3>
+                        </div>
+                        <div className="space-y-2">
+                          {books.map((book) => (
+                            <button
+                              key={book.id}
+                              onClick={() => {
+                                onCreateBookGoal(book.id);
+                                handleClose();
+                              }}
+                              className="w-full p-3 rounded-xl border border-white/5 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04] transition-all text-left flex items-start gap-3"
+                            >
+                              <span className="text-xl mt-0.5">{book.emoji}</span>
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-bold text-sm truncate">{book.title}</h4>
+                                <p className="text-[11px] text-gray-500">{book.author} • {book.pages} stran</p>
+                                <div className="flex items-center gap-1 mt-1">
+                                  {[1, 2, 3, 4, 5].map((star) => (
+                                    <Star
+                                      key={star}
+                                      className={`w-2.5 h-2.5 ${
+                                        star <= Math.round(book.rating)
+                                          ? "text-yellow-500 fill-yellow-500"
+                                          : "text-gray-700"
+                                      }`}
+                                    />
+                                  ))}
+                                  <span className="text-[10px] text-gray-600 ml-1">{book.rating}</span>
+                                </div>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </motion.div>
+                )}
+
+                {/* Step 2: Facilities selection */}
+                {step === 2 && selectedCategory === "facility" && (
+                  <motion.div
+                    key="step-facility"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    className="p-6"
+                  >
+                    <p className="text-sm text-gray-400 mb-6 text-center">
+                      Kam chceš pravidelně docházet?
+                    </p>
+                    <div className="grid grid-cols-2 gap-3">
+                      {facilitiesData.map((fac) => (
+                        <button
+                          key={fac.id}
+                          onClick={() => {
+                            onCreateFacilityGoal(fac.id);
+                            handleClose();
+                          }}
+                          className="relative p-4 rounded-2xl border text-left transition-all bg-white/[0.02] border-white/5 hover:border-white/20 hover:bg-white/[0.04]"
+                        >
+                          <div className="text-2xl mb-2">{fac.emoji}</div>
+                          <h3 className="font-bold text-sm mb-1">{fac.name}</h3>
+                          <p className="text-[10px] text-gray-500 leading-snug line-clamp-2">{fac.description}</p>
+                          <div className="mt-2">
+                            <span className="text-[10px] text-gray-600">
+                              Cíl: {fac.recommendedVisits} {fac.visitUnit}
+                            </span>
+                          </div>
+                          <div
+                            className="absolute top-0 right-0 w-12 h-12 rounded-bl-3xl opacity-10"
+                            style={{ backgroundColor: fac.color }}
+                          />
+                        </button>
+                      ))}
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
